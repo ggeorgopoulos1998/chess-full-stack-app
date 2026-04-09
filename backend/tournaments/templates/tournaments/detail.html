@@ -14,8 +14,20 @@
         <li><strong>Ημερομηνία:</strong> {{ tournament.date|date:"d/m/Y H:i" }}</li>
         <li><strong>Ώρα:</strong> {{ tournament.start_time }}</li>
         <li><strong>Τοποθεσία:</strong> {{ tournament.location }}</li>
-        <li><strong>Κόστος συμμετοχής:</strong> {{ tournament.price_euro }}€</li>
-        <li><strong>Μέγιστος αριθμός παικτών:</strong> {{ tournament.max_players }}</li>
+        <li>
+          <strong>Κόστος συμμετοχής:</strong>
+          {% if tournament.price_euro == 0 %}
+            <span style="color: #1f5d1f; font-weight: 600;">Δωρεάν</span>
+          {% else %}
+            <span style="color: var(--primary); font-weight: 600;">{{ tournament.price_euro }}€</span>
+          {% endif %}
+        </li>
+        <li>
+          <strong>Διαθέσιμες θέσεις:</strong> {{ registrations_count }}/{{ tournament.max_players }}
+          {% if is_full %}
+            <span style="color: #7a1f1f; font-weight: 600;">(Πλήρες)</span>
+          {% endif %}
+        </li>
         <li><strong>Σύστημα αγώνων:</strong> {{ tournament.system }}</li>
       </ul>
 
@@ -25,132 +37,164 @@
         </div>
       {% endif %}
 
-      <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e6eaf2;">
-
-      <h3 style="margin-bottom: 14px; color: var(--primary);">Δήλωση συμμετοχής</h3>
-
-      <form method="post" style="display: grid; gap: 14px;">
-        {% csrf_token %}
-
-        <div>
-          <label style="display:block; margin-bottom:6px; font-weight:600;">Ονοματεπώνυμο</label>
-          {{ form.full_name }}
+      {% if full_message %}
+        <div style="margin: 20px 0; padding: 14px 16px; background: #ffe8e8; border: 1px solid #e2b7b7; border-radius: 12px; color: #7a1f1f;">
+          Λυπούμαστε! Το τουρνουά είναι πλήρες.
         </div>
+      {% endif %}
 
-        <div>
-          <label style="display:block; margin-bottom:6px; font-weight:600;">Email</label>
-          {{ form.email }}
-        </div>
+      {% if not is_full and tournament.is_open %}
+        <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e6eaf2;">
 
-        <div>
-          <label style="display:block; margin-bottom:6px; font-weight:600;">Τηλέφωνο</label>
-          {{ form.phone }}
-        </div>
+        <h3 style="margin-bottom: 14px; color: var(--primary);">Δήλωση συμμετοχής</h3>
 
-        <div>
-          <label style="display:block; margin-bottom:6px; font-weight:600;">Σύλλογος</label>
-          {{ form.club }}
-        </div>
+        <form action="{% url 'tournament_checkout' slug=tournament.slug %}" method="post" style="display: grid; gap: 14px;">
+          {% csrf_token %}
 
-        <div>
-          <label style="display:block; margin-bottom:6px; font-weight:600;">ELO</label>
-          {{ form.elo }}
-        </div>
+          <div>
+            <label style="display:block; margin-bottom:6px; font-weight:600;">Ονοματεπώνυμο</label>
+            {{ form.full_name }}
+          </div>
 
-        <div>
-          <label style="display:block; margin-bottom:6px; font-weight:600;">Σχόλια</label>
-          {{ form.notes }}
-        </div>
+          <div>
+            <label style="display:block; margin-bottom:6px; font-weight:600;">Email</label>
+            {{ form.email }}
+          </div>
 
-        <button type="submit" name="register_submit" class="btn" style="border:0; cursor:pointer; width:max-content;">
-          Υποβολή συμμετοχής
-        </button>
-      </form>
+          <div>
+            <label style="display:block; margin-bottom:6px; font-weight:600;">Τηλέφωνο</label>
+            {{ form.phone }}
+          </div>
+
+          <div>
+            <label style="display:block; margin-bottom:6px; font-weight:600;">Σύλλογος</label>
+            {{ form.club }}
+          </div>
+
+          <div>
+            <label style="display:block; margin-bottom:6px; font-weight:600;">ELO</label>
+            {{ form.elo }}
+          </div>
+
+          <div>
+            <label style="display:block; margin-bottom:6px; font-weight:600;">Σχόλια</label>
+            {{ form.notes }}
+          </div>
+
+          {% if tournament.price_euro > 0 %}
+            <div style="margin: 10px 0; padding: 16px; background: #f0f4ff; border: 1px solid #c7d4f5; border-radius: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div>
+                  <p style="margin: 0 0 4px; font-size: 14px; color: #5a6a8a;">Κόστος συμμετοχής</p>
+                  <p style="margin: 0; font-size: 24px; font-weight: 700; color: var(--primary);">{{ tournament.price_euro }}€</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; color: #5a6a8a; font-size: 14px;">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                  </svg>
+                  <span>Ασφαλής πληρωμή με Stripe</span>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn" style="border:0; cursor:pointer; width:max-content; display: flex; align-items: center; gap: 8px;" data-testid="pay-and-register-btn">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+              </svg>
+              Πληρωμή & Εγγραφή - {{ tournament.price_euro }}€
+            </button>
+          {% else %}
+            <button type="submit" class="btn" style="border:0; cursor:pointer; width:max-content;" data-testid="register-btn">
+              Δωρεάν Εγγραφή
+            </button>
+          {% endif %}
+        </form>
+      {% endif %}
 
       {% if postponement_success %}
-  <div style="margin: 20px 0; padding: 14px 16px; background: #e8f7e8; border: 1px solid #b7e2b7; border-radius: 12px; color: #1f5d1f;">
-    Το αίτημα αναβολής καταχωρίστηκε επιτυχώς.
-  </div>
-{% endif %}
-
-{% if already_pending %}
-  <div style="margin: 20px 0; padding: 14px 16px; background: #fff4e8; border: 1px solid #ffd7ad; border-radius: 12px; color: #8a4b08;">
-    Υπάρχει ήδη εκκρεμές αίτημα αναβολής για τη συμμετοχή σας.
-  </div>
-{% endif %}
-
-{% if user.is_authenticated and user_registration %}
-  <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e6eaf2;">
-
-  <h3 style="margin-bottom: 14px; color: var(--primary);">Αίτημα αναβολής</h3>
-
-  <p style="color: var(--muted);">
-    Αν χρειάζεστε αναβολή για συγκεκριμένη ημέρα του τουρνουά, μπορείτε να υποβάλετε αίτημα εδώ.
-  </p>
-
-  {% if not existing_pending_request %}
-    <form method="post" style="display:grid; gap:14px;">
-      {% csrf_token %}
-
-      <div>
-        <label style="display:block; margin-bottom:6px; font-weight:600;">Ημερομηνία αναβολής</label>
-        {{ postponement_form.requested_date }}
-      </div>
-
-      <div>
-        <label style="display:block; margin-bottom:6px; font-weight:600;">Αιτιολογία</label>
-        {{ postponement_form.reason }}
-      </div>
-
-      <button type="submit" name="postponement_submit" class="btn" style="border:0; cursor:pointer; width:max-content;">
-        Υποβολή αιτήματος
-      </button>
-    </form>
-  {% else %}
-    <div style="margin: 18px 0; padding: 14px; background: #fff4e8; border: 1px solid #ffd7ad; border-radius: 12px; color: #8a4b08;">
-      Έχεις ήδη ένα εκκρεμές αίτημα αναβολής. Περίμενε την απάντηση του διαχειριστή.
-    </div>
-  {% endif %}
-
-  {% if user_postponements %}
-    <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e6eaf2;">
-
-    <h3 style="margin-bottom: 14px; color: var(--primary);">Τα αιτήματά σου</h3>
-
-    <div style="display:grid; gap:12px;">
-      {% for p in user_postponements %}
-        <div style="padding:16px; border:1px solid var(--border); border-radius:14px; background:#fff;">
-          <p style="margin:0 0 8px;">
-            <strong>Ημερομηνία αναβολής:</strong> {{ p.requested_date|date:"d/m/Y" }}
-          </p>
-
-          <p style="margin:0 0 8px;">
-            <strong>Κατάσταση:</strong>
-            {% if p.status == "pending" %}
-              <span style="color:#8a4b08; font-weight:700;">Εκκρεμεί</span>
-            {% elif p.status == "approved" %}
-              <span style="color:#1f5d1f; font-weight:700;">Εγκρίθηκε</span>
-            {% elif p.status == "rejected" %}
-              <span style="color:#7a1f1f; font-weight:700;">Απορρίφθηκε</span>
-            {% else %}
-              {{ p.status }}
-            {% endif %}
-          </p>
-
-          <p style="margin:0 0 8px;">
-            <strong>Αιτιολογία:</strong> {{ p.reason }}
-          </p>
-
-          {% if p.admin_notes %}
-            <p style="margin:0;">
-              <strong>Σημειώσεις διαχειριστή:</strong> {{ p.admin_notes }}
-            </p>
-          {% endif %}
+        <div style="margin: 20px 0; padding: 14px 16px; background: #e8f7e8; border: 1px solid #b7e2b7; border-radius: 12px; color: #1f5d1f;">
+          Το αίτημα αναβολής καταχωρίστηκε επιτυχώς.
         </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-{% endif %}
+      {% endif %}
+
+      {% if already_pending %}
+        <div style="margin: 20px 0; padding: 14px 16px; background: #fff4e8; border: 1px solid #ffd7ad; border-radius: 12px; color: #8a4b08;">
+          Υπάρχει ήδη εκκρεμές αίτημα αναβολής για τη συμμετοχή σας.
+        </div>
+      {% endif %}
+
+      {% if user.is_authenticated and user_registration %}
+        <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e6eaf2;">
+
+        <h3 style="margin-bottom: 14px; color: var(--primary);">Αίτημα αναβολής</h3>
+
+        <p style="color: var(--muted);">
+          Αν χρειάζεστε αναβολή για συγκεκριμένη ημέρα του τουρνουά, μπορείτε να υποβάλετε αίτημα εδώ.
+        </p>
+
+        {% if not existing_pending_request %}
+          <form method="post" style="display:grid; gap:14px;">
+            {% csrf_token %}
+
+            <div>
+              <label style="display:block; margin-bottom:6px; font-weight:600;">Ημερομηνία αναβολής</label>
+              {{ postponement_form.requested_date }}
+            </div>
+
+            <div>
+              <label style="display:block; margin-bottom:6px; font-weight:600;">Αιτιολογία</label>
+              {{ postponement_form.reason }}
+            </div>
+
+            <button type="submit" name="postponement_submit" class="btn" style="border:0; cursor:pointer; width:max-content;">
+              Υποβολή αιτήματος
+            </button>
+          </form>
+        {% else %}
+          <div style="margin: 18px 0; padding: 14px; background: #fff4e8; border: 1px solid #ffd7ad; border-radius: 12px; color: #8a4b08;">
+            Έχεις ήδη ένα εκκρεμές αίτημα αναβολής. Περίμενε την απάντηση του διαχειριστή.
+          </div>
+        {% endif %}
+
+        {% if user_postponements %}
+          <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e6eaf2;">
+
+          <h3 style="margin-bottom: 14px; color: var(--primary);">Τα αιτήματά σου</h3>
+
+          <div style="display:grid; gap:12px;">
+            {% for p in user_postponements %}
+              <div style="padding:16px; border:1px solid var(--border); border-radius:14px; background:#fff;">
+                <p style="margin:0 0 8px;">
+                  <strong>Ημερομηνία αναβολής:</strong> {{ p.requested_date|date:"d/m/Y" }}
+                </p>
+
+                <p style="margin:0 0 8px;">
+                  <strong>Κατάσταση:</strong>
+                  {% if p.status == "pending" %}
+                    <span style="color:#8a4b08; font-weight:700;">Εκκρεμεί</span>
+                  {% elif p.status == "approved" %}
+                    <span style="color:#1f5d1f; font-weight:700;">Εγκρίθηκε</span>
+                  {% elif p.status == "rejected" %}
+                    <span style="color:#7a1f1f; font-weight:700;">Απορρίφθηκε</span>
+                  {% else %}
+                    {{ p.status }}
+                  {% endif %}
+                </p>
+
+                <p style="margin:0 0 8px;">
+                  <strong>Αιτιολογία:</strong> {{ p.reason }}
+                </p>
+
+                {% if p.admin_notes %}
+                  <p style="margin:0;">
+                    <strong>Σημειώσεις διαχειριστή:</strong> {{ p.admin_notes }}
+                  </p>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endif %}
 
       <a class="back" href="/tournaments/">← Επιστροφή στη λίστα τουρνουά</a>
     </div>

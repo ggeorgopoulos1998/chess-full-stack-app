@@ -1,0 +1,33 @@
+{% extends "tournaments/base.html" %}
+
+{% block title %}Ακύρωση Πληρωμής | ΑΣΟΠ ΔΙΑΣ{% endblock %}
+
+{% block content %}
+<section class="detail-wrap">
+  <div class="container">
+    <div class="detail-card" style="text-align: center;">
+
+      <div style="color: #666; margin-bottom: 20px;">
+        <svg width="80" height="80" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </div>
+
+      <h2 style="color: #333; margin-bottom: 16px;">Η πληρωμή ακυρώθηκε</h2>
+
+      <p style="color: #666; margin-bottom: 24px;">
+        Η διαδικασία πληρωμής για το τουρνουά <strong>{{ tournament.title }}</strong> ακυρώθηκε.
+      </p>
+
+      <p style="font-size: 14px; color: #888; margin-bottom: 24px;">
+        Μπορείτε να δοκιμάσετε ξανά όποτε θέλετε.
+      </p>
+
+      <a href="/tournaments/{{ tournament.slug }}/" class="btn" style="display: inline-block; text-decoration: none;">
+        Επιστροφή στο τουρνουά
+      </a>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

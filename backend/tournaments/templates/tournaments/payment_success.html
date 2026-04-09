@@ -1,0 +1,111 @@
+{% extends "tournaments/base.html" %}
+
+{% block title %}Επιτυχής Πληρωμή | ΑΣΟΠ ΔΙΑΣ{% endblock %}
+
+{% block content %}
+<section class="detail-wrap">
+  <div class="container">
+    <div class="detail-card" style="text-align: center;">
+
+      {% if success %}
+        <div style="color: #1f5d1f; margin-bottom: 20px;">
+          <svg width="80" height="80" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <h2 style="color: #1f5d1f; margin-bottom: 16px;">Η πληρωμή ολοκληρώθηκε!</h2>
+        <p style="color: #1f5d1f; margin-bottom: 24px;">
+          Η εγγραφή σας στο τουρνουά <strong>{{ tournament.title }}</strong> έχει ολοκληρωθεί επιτυχώς.
+        </p>
+
+        <div style="background: #f8f9fa; border-radius: 12px; padding: 20px; margin-bottom: 24px; text-align: left;">
+          <h3 style="margin: 0 0 12px; color: var(--primary);">Στοιχεία Εγγραφής:</h3>
+          <p style="margin: 4px 0;"><strong>Όνομα:</strong> {{ registration.full_name }}</p>
+          <p style="margin: 4px 0;"><strong>Email:</strong> {{ registration.email }}</p>
+          <p style="margin: 4px 0;"><strong>Τηλέφωνο:</strong> {{ registration.phone }}</p>
+          {% if registration.club %}
+            <p style="margin: 4px 0;"><strong>Σύλλογος:</strong> {{ registration.club }}</p>
+          {% endif %}
+        </div>
+
+        <p style="font-size: 14px; color: #666; margin-bottom: 24px;">
+          Θα λάβετε email επιβεβαίωσης στο {{ registration.email }}
+        </p>
+
+        <a href="/tournaments/{{ tournament.slug }}/" class="btn" style="display: inline-block; text-decoration: none;">
+          Επιστροφή στο τουρνουά
+        </a>
+
+      {% elif pending %}
+        <div style="color: #8a4b08; margin-bottom: 20px;">
+          <svg width="80" height="80" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto; animation: spin 2s linear infinite;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </div>
+        <style>
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        </style>
+        <h2 style="color: #8a4b08; margin-bottom: 16px;">Επεξεργασία πληρωμής...</h2>
+        <p style="color: #8a4b08; margin-bottom: 24px;" id="status-message">
+          Η πληρωμή σας επεξεργάζεται. Παρακαλώ περιμένετε...
+        </p>
+
+        <div id="retry-section" style="display: none;">
+          <a href="/tournaments/{{ tournament.slug }}/" class="btn" style="display: inline-block; text-decoration: none;">
+            Επιστροφή στο τουρνουά
+          </a>
+        </div>
+
+        <script>
+          const sessionId = "{{ session_id }}";
+          let attempts = 0;
+          const maxAttempts = 10;
+
+          function checkStatus() {
+            if (attempts >= maxAttempts) {
+              document.getElementById('status-message').textContent =
+                'Η επαλήθευση της πληρωμής καθυστερεί. Παρακαλώ ελέγξτε το email σας.';
+              document.getElementById('retry-section').style.display = 'block';
+              return;
+            }
+
+            fetch('/tournaments/{{ tournament.slug }}/payment/status/?session_id=' + sessionId)
+              .then(response => response.json())
+              .then(data => {
+                if (data.payment_status === 'paid') {
+                  window.location.reload();
+                } else {
+                  attempts++;
+                  setTimeout(checkStatus, 2000);
+                }
+              })
+              .catch(() => {
+                attempts++;
+                setTimeout(checkStatus, 2000);
+              });
+          }
+
+          setTimeout(checkStatus, 2000);
+        </script>
+
+      {% elif error %}
+        <div style="color: #7a1f1f; margin-bottom: 20px;">
+          <svg width="80" height="80" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <h2 style="color: #7a1f1f; margin-bottom: 16px;">Σφάλμα</h2>
+        <p style="color: #7a1f1f; margin-bottom: 24px;">{{ message }}</p>
+
+        <a href="/tournaments/{{ tournament.slug }}/" class="btn" style="display: inline-block; text-decoration: none;">
+          Επιστροφή στο τουρνουά
+        </a>
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+{% endblock %}

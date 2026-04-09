@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
+from tournaments.payments import stripe_webhook
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -22,6 +23,9 @@ urlpatterns = [
         auth_views.LogoutView.as_view(),
         name="logout"
     ),
+
+    # Stripe webhook
+    path("webhook/stripe/", stripe_webhook, name="stripe_webhook"),
 ]
 
 if settings.DEBUG:
