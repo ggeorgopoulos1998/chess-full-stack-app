@@ -1,0 +1,72 @@
+{% extends "tournaments/base.html" %}
+
+{% block title %}Ημερολόγιο Τουρνουά | ΑΣΟΠ ΔΙΑΣ{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <div class="hero-card">
+      <h2>Ημερολόγιο Τουρνουά</h2>
+      <p>
+        Επιλέξτε ημερομηνία για να δείτε ποια τουρνουά είναι διαθέσιμα και να προχωρήσετε σε δήλωση συμμετοχής.
+      </p>
+
+      <form method="get" style="margin-top: 24px; display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+        <div style="min-width:260px;">
+          <label style="display:block; margin-bottom:8px; font-weight:600; color:var(--primary);">
+            Επιλογή ημερομηνίας
+          </label>
+          <input type="date" name="date" value="{{ selected_date }}">
+        </div>
+
+        <button type="submit" class="btn" style="border:0; cursor:pointer;">
+          Αναζήτηση
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container" style="padding-bottom: 40px;">
+    {% if selected_date %}
+      <div style="margin-bottom: 20px;">
+        <h3 style="color:var(--primary); margin-bottom:8px;">
+          Διαθέσιμα τουρνουά για {{ selected_date }}
+        </h3>
+      </div>
+
+      {% if tournaments %}
+        <div class="grid">
+          {% for t in tournaments %}
+            <article class="card">
+              <span class="badge">{{ t.category|title }}</span>
+              <h3>{{ t.title }}</h3>
+              <p>{{ t.description }}</p>
+
+              <ul class="meta">
+                <li><strong>Ημερομηνία:</strong> {{ t.date|date:"d/m/Y H:i" }}</li>
+                <li><strong>Ώρα:</strong> {{ t.start_time }}</li>
+                <li><strong>Τοποθεσία:</strong> {{ t.location }}</li>
+                <li><strong>Κόστος:</strong> {{ t.price_euro }}€</li>
+              </ul>
+
+              <a class="btn" href="{% url 'tournament_detail' t.slug %}">
+                Δήλωση συμμετοχής
+              </a>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty">
+          Δεν υπάρχουν διαθέσιμα τουρνουά για την επιλεγμένη ημερομηνία.
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="empty">
+        Επιλέξτε μια ημερομηνία από το ημερολόγιο για να εμφανιστούν τα διαθέσιμα τουρνουά.
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

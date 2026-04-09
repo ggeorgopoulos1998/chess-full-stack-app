@@ -1,0 +1,46 @@
+{% extends "tournaments/base.html" %}
+
+{% block title %}Τουρνουά Σκακιού | ΑΣΟΠ ΔΙΑΣ{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <div class="hero-card">
+      <h2>Τουρνουά Σκακιού</h2>
+      <p>
+        Δείτε τις διαθέσιμες διοργανώσεις του συλλόγου και ενημερωθείτε για
+        ημερομηνίες, κατηγορίες, κόστος συμμετοχής και βασικές λεπτομέρειες.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    {% if tournaments %}
+      <div class="grid">
+        {% for t in tournaments %}
+          <article class="card">
+            <span class="badge">{{ t.category|title }}</span>
+            <h3>{{ t.title }}</h3>
+            <p>{{ t.description }}</p>
+
+            <ul class="meta">
+              <li><strong>Ημερομηνία:</strong> {{ t.date|date:"d/m/Y H:i" }}</li>
+              <li><strong>Ώρα:</strong> {{ t.start_time }}</li>
+              <li><strong>Τοποθεσία:</strong> {{ t.location }}</li>
+              <li><strong>Κόστος:</strong> {{ t.price_euro }}€</li>
+            </ul>
+
+            <a class="btn" href="{% url 'tournament_detail' t.slug %}">
+              Δες λεπτομέρειες
+            </a>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">Δεν υπάρχουν τουρνουά αυτή τη στιγμή.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

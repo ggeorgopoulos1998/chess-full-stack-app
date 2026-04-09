@@ -1,0 +1,44 @@
+{% extends "tournaments/base.html" %}
+
+{% block title %}Προπονήσεις | ΑΣΟΠ ΔΙΑΣ{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <div class="hero-card">
+      <h2>Προπονήσεις</h2>
+      <p>Δείτε διαθέσιμες προπονήσεις με προπονητές και επιλέξτε αυτή που σας ενδιαφέρει.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    {% if sessions %}
+      <div class="grid">
+        {% for s in sessions %}
+          <article class="card">
+            <span class="badge">{{ s.session_type|title }}</span>
+            <h3>{{ s.title }}</h3>
+            <p>{{ s.description }}</p>
+
+            <ul class="meta">
+              <li><strong>Προπονητής:</strong> {{ s.coach.first_name }} {{ s.coach.last_name }}</li>
+              <li><strong>Ημερομηνία:</strong> {{ s.date|date:"d/m/Y H:i" }}</li>
+              <li><strong>Ώρα:</strong> {{ s.start_time }}</li>
+              <li><strong>Διάρκεια:</strong> {{ s.duration_minutes }} λεπτά</li>
+              <li><strong>Κόστος:</strong> {{ s.price_euro }}€</li>
+            </ul>
+
+            <a href="{% url 'training_detail' s.id %}" class="btn">
+              Δες λεπτομέρειες
+            </a>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">Δεν υπάρχουν διαθέσιμες προπονήσεις.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

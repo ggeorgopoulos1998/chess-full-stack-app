@@ -1,0 +1,129 @@
+{% extends "tournaments/base.html" %}
+
+{% block title %}{{ session.title }} | Προπονήσεις{% endblock %}
+
+{% block content %}
+<section class="detail-wrap">
+  <div class="container">
+    <div class="detail-card">
+
+      <h2>{{ session.title }}</h2>
+
+      <div style="display:grid; grid-template-columns: 220px 1fr; gap:24px; align-items:start; margin: 24px 0;">
+        <div>
+          {% if session.coach.photo %}
+            <img
+              src="{{ session.coach.photo.url }}"
+              alt="{{ session.coach.first_name }} {{ session.coach.last_name }}"
+              style="width:100%; max-width:220px; border-radius:18px; object-fit:cover; box-shadow: var(--shadow);"
+            >
+          {% else %}
+            <div style="width:220px; height:220px; border-radius:18px; background:#eef3fb; display:flex; align-items:center; justify-content:center; color:var(--muted); border:1px solid var(--border);">
+              No image
+            </div>
+          {% endif %}
+        </div>
+
+        <div>
+          <p class="desc" style="margin-top:0;">
+            <strong>Προπονητής:</strong>
+            {{ session.coach.first_name }} {{ session.coach.last_name }}
+          </p>
+
+          {% if session.coach.specialty %}
+            <p class="desc" style="margin-top:0;">
+              <strong>Ειδικότητα:</strong>
+              {{ session.coach.specialty }}
+            </p>
+          {% endif %}
+
+          {% if session.coach.short_bio %}
+            <p class="desc">
+              {{ session.coach.short_bio }}
+            </p>
+          {% endif %}
+
+          {% if session.coach.full_bio %}
+            <div style="margin-top:16px; padding:18px; background:#f8fbff; border:1px solid var(--border); border-radius:14px;">
+              <strong style="display:block; margin-bottom:8px; color:var(--primary);">Σύντομο βιογραφικό</strong>
+              <p style="margin:0; color:var(--muted); line-height:1.7;">
+                {{ session.coach.full_bio }}
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <ul class="meta">
+        <li><strong>Ημερομηνία:</strong> {{ session.date|date:"d/m/Y H:i" }}</li>
+        <li><strong>Ώρα έναρξης:</strong> {{ session.start_time }}</li>
+        <li><strong>Τύπος:</strong> {{ session.session_type|title }}</li>
+        <li><strong>Διάρκεια:</strong> {{ session.duration_minutes }} λεπτά</li>
+        <li><strong>Κόστος:</strong> {{ session.price_euro }}€</li>
+        <li><strong>Διαθέσιμες θέσεις:</strong> {{ bookings_count }}/{{ session.max_participants }}</li>
+      </ul>
+
+      {% if is_full %}
+        <div style="margin: 18px 0; padding: 14px; background: #ffeaea; border: 1px solid #f5bcbc; border-radius: 12px; color: #7a1f1f;">
+          Η προπόνηση είναι πλήρης.
+        </div>
+      {% else %}
+        <div style="margin: 18px 0; padding: 14px; background: #e8f7e8; border: 1px solid #b7e2b7; border-radius: 12px; color: #1f5d1f;">
+          Διαθέσιμες θέσεις.
+        </div>
+      {% endif %}
+
+      <!-- SUCCESS MESSAGE -->
+      {% if success %}
+        <div style="margin: 18px 0; padding: 14px; background: #e8f7e8; border: 1px solid #b7e2b7; border-radius: 12px; color: #1f5d1f;">
+          ✅ Η κράτηση καταχωρίστηκε επιτυχώς!
+        </div>
+      {% endif %}
+
+      <!-- FULL MESSAGE -->
+      {% if full_message %}
+        <div style="margin: 18px 0; padding: 14px; background: #ffeaea; border: 1px solid #f5bcbc; border-radius: 12px; color: #7a1f1f;">
+          ❌ Δεν υπάρχουν διαθέσιμες θέσεις.
+        </div>
+      {% endif %}
+
+      <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e6eaf2;">
+
+      <h3 style="margin-bottom: 14px; color: var(--primary);">Κράτηση θέσης</h3>
+
+      {% if not is_full %}
+        <form method="post" style="display:grid; gap:14px;">
+          {% csrf_token %}
+
+          <div>
+            <label style="font-weight:600;">Ονοματεπώνυμο</label>
+            {{ form.full_name }}
+          </div>
+
+          <div>
+            <label style="font-weight:600;">Email</label>
+            {{ form.email }}
+          </div>
+
+          <div>
+            <label style="font-weight:600;">Τηλέφωνο</label>
+            {{ form.phone }}
+          </div>
+
+          <div>
+            <label style="font-weight:600;">Σχόλια</label>
+            {{ form.notes }}
+          </div>
+
+          <button type="submit" class="btn" style="border:0; cursor:pointer; width:max-content;">
+            Κράτηση θέσης
+          </button>
+        </form>
+      {% endif %}
+
+      <a class="back" href="/trainings/">← Επιστροφή στις προπονήσεις</a>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

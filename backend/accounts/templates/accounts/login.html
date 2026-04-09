@@ -1,0 +1,21 @@
+{% extends "tournaments/base.html" %}
+
+{% block title %}Σύνδεση | ΑΣΟΠ ΔΙΑΣ{% endblock %}
+
+{% block content %}
+<section class="detail-wrap">
+  <div class="container">
+    <div class="detail-card" style="max-width: 700px; margin: 0 auto;">
+      <h2>Σύνδεση</h2>
+
+      <form method="post" style="display:grid; gap:14px; margin-top:20px;">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn" style="border:0; cursor:pointer; width:max-content;">
+          Σύνδεση
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
