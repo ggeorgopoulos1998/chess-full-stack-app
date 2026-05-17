@@ -1,16 +1,13 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="el">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}ΑΣΟΠ ΔΙΑΣ{% endblock %}</title>
-  <style>
-    input:focus, textarea:focus, select:focus {
-      outline: none;
-      border-color: var(--primary-2);
-      box-shadow: 0 0 0 3px rgba(31, 95, 191, 0.10);
-    }
 
+  <style>
     :root {
       --bg: #f4f7fb;
       --card: #ffffff;
@@ -24,22 +21,6 @@
       --radius: 18px;
     }
 
-    input, textarea, select {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #d9e2f0;
-      border-radius: 12px;
-      font-size: 15px;
-      background: white;
-      color: var(--text);
-    }
-
-    input:focus, textarea:focus, select:focus {
-      outline: none;
-      border-color: var(--primary-2);
-      box-shadow: 0 0 0 3px rgba(31, 95, 191, 0.10);
-    }
-
     * { box-sizing: border-box; }
 
     body {
@@ -47,6 +28,21 @@
       font-family: Inter, Arial, sans-serif;
       background: linear-gradient(180deg, #eef3fb 0%, #f7f9fc 100%);
       color: var(--text);
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d9e2f0;
+      border-radius: 12px;
+      font-size: 15px;
+      background: white;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-2);
+      box-shadow: 0 0 0 3px rgba(31, 95, 191, 0.10);
     }
 
     .topbar {
@@ -67,15 +63,12 @@
       gap: 14px;
     }
 
-    .logo {
-      width: 46px;
-      height: 46px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.16);
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      border: 1px solid rgba(255,255,255,0.18);
+    .brand img {
+      height: 40px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: white;
+      padding: 2px;
     }
 
     .brand h1 {
@@ -86,8 +79,37 @@
 
     .brand p {
       margin: 2px 0 0;
-      opacity: 0.9;
       font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .nav {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 700;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .btn-outline {
+      background: white;
+      color: var(--primary);
+      font-weight: 700;
     }
 
     .hero {
@@ -105,13 +127,11 @@
     .hero-card h2 {
       margin: 0 0 10px;
       font-size: 40px;
-      line-height: 1.1;
       color: var(--primary);
     }
 
     .hero-card p {
       margin: 0;
-      max-width: 760px;
       color: var(--muted);
       font-size: 17px;
       line-height: 1.7;
@@ -143,81 +163,15 @@
       margin-bottom: 14px;
     }
 
-    .card h3 {
-      margin: 0 0 8px;
-      font-size: 28px;
-      color: var(--text);
-    }
-
-    .card p {
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
     .meta {
       margin: 18px 0;
       padding: 0;
       list-style: none;
-      color: #344054;
     }
 
     .meta li {
       padding: 7px 0;
       border-bottom: 1px solid #f0f2f7;
-    }
-
-    .meta li:last-child {
-      border-bottom: 0;
-    }
-
-    .btn {
-      display: inline-block;
-      text-decoration: none;
-      background: var(--accent);
-      color: white;
-      padding: 12px 18px;
-      border-radius: 12px;
-      font-weight: 700;
-      margin-top: 8px;
-      transition: transform .15s ease, opacity .15s ease;
-    }
-
-    .btn:hover {
-      opacity: .95;
-      transform: translateY(-1px);
-    }
-
-    .detail-wrap {
-      padding: 34px 0 50px;
-    }
-
-    .detail-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 34px;
-      box-shadow: var(--shadow);
-    }
-
-    .detail-card h2 {
-      margin: 0 0 12px;
-      font-size: 38px;
-      color: var(--primary);
-    }
-
-    .detail-card .desc {
-      color: var(--muted);
-      font-size: 17px;
-      line-height: 1.7;
-      margin-bottom: 20px;
-    }
-
-    .back {
-      display: inline-block;
-      margin-top: 20px;
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
     }
 
     .empty {
@@ -230,62 +184,43 @@
 
     @media (max-width: 720px) {
       .hero-card h2 { font-size: 30px; }
-      .detail-card h2 { font-size: 30px; }
-      .hero-card, .detail-card, .card { padding: 24px; }
     }
   </style>
 </head>
+
 <body>
   <header class="topbar">
     <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
 
+      <!-- ✅ BRAND (LOGO + TEXT) -->
       <div class="brand">
-        <div class="logo">ΑΣ</div>
+        <img src="{% static 'images/asop_dias_logo.png' %}" alt="ΑΣΟΠ ΔΙΑΣ">
+
         <div>
           <h1>ΑΣΟΠ ΔΙΑΣ</h1>
           <p>Online δήλωση συμμετοχής σε τουρνουά σκακιού</p>
         </div>
       </div>
 
-      <div style="display:flex; gap:12px; align-items:center;">
-  <a href="{% url 'tournament_list' %}"
-     style="color:white; text-decoration:none; font-weight:600;">
-    Τουρνουά
-  </a>
-</div>
-
-        <a href="/trainings/"
-           style="color:white; text-decoration:none; font-weight:600;">
-          Προπονήσεις
-        </a>
+      <!-- ✅ NAVIGATION -->
+      <div class="nav">
+        <a href="{% url 'tournament_list' %}">Τουρνουά</a>
+        <a href="{% url 'training_list' %}">Προπονήσεις</a>
 
         {% if user.is_authenticated %}
-          <a href="{% url 'dashboard' %}"
-             style="color:white; text-decoration:none; font-weight:600;">
-            Profile
-          </a>
+          <a href="{% url 'dashboard' %}">Profile</a>
 
-          <span style="color:white;">
-            Γεια σου, {{ user.first_name|default:user.username }}
-          </span>
+          <span>Γεια σου, {{ user.first_name|default:user.username }}</span>
 
           <form method="post" action="{% url 'logout' %}" style="margin:0;">
             {% csrf_token %}
-            <button type="submit"
-              style="background:white; color:var(--primary); border:0; padding:10px 14px; border-radius:10px; font-weight:600; cursor:pointer;">
+            <button type="submit" class="btn btn-outline">
               Αποσύνδεση
             </button>
           </form>
         {% else %}
-          <a href="{% url 'login' %}"
-             style="color:white; text-decoration:none; font-weight:600;">
-            Σύνδεση
-          </a>
-
-          <a href="{% url 'signup' %}"
-             style="background:white; color:var(--primary); text-decoration:none; padding:10px 14px; border-radius:10px; font-weight:700;">
-            Εγγραφή
-          </a>
+          <a href="{% url 'login' %}">Σύνδεση</a>
+          <a href="{% url 'signup' %}" class="btn btn-outline">Εγγραφή</a>
         {% endif %}
       </div>
 
