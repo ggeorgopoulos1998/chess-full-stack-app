@@ -1,0 +1,160 @@
+{% extends "tournaments/base.html" %}
+
+{% block title %}Dashboard | ΑΣΟΠ ΔΙΑΣ{% endblock %}
+
+{% block content %}
+<section class="detail-wrap">
+  <div class="container">
+    <div class="detail-card">
+      <h2>Το προφίλ σου</h2>
+      <p class="desc">
+        Εδώ μπορείς να δεις όλες τις συμμετοχές σου σε τουρνουά, τα αιτήματα αναβολής και τις κρατήσεις σου στις προπονήσεις.
+      </p>
+
+      <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e6eaf2;">
+
+      <h3 style="margin-bottom: 14px; color: var(--primary);">🎯 Οι συμμετοχές σου</h3>
+
+      {% if registrations %}
+        <div style="display:grid; gap:12px;">
+          {% for r in registrations %}
+            <div style="padding:16px; border:1px solid var(--border); border-radius:14px; background:#fff;">
+              <p style="margin:0 0 8px;">
+                <strong>Τουρνουά:</strong> {{ r.tournament.title }}
+              </p>
+
+              <p style="margin:0 0 8px;">
+                <strong>Ημερομηνία:</strong> {{ r.tournament.date|date:"d/m/Y H:i" }}
+              </p>
+
+              <p style="margin:0 0 8px;">
+                <strong>Τοποθεσία:</strong> {{ r.tournament.location }}
+              </p>
+
+              <p style="margin:0 0 8px;">
+                <strong>Κατάσταση πληρωμής:</strong>
+                {% if r.payment_status == "free" %}
+                  <span style="color:#1f5d1f; font-weight:700;">Δωρεάν</span>
+                {% elif r.payment_status == "paid" %}
+                  <span style="color:#1f5d1f; font-weight:700;">Πληρωμένο</span>
+                {% elif r.payment_status == "pending" %}
+                  <span style="color:#8a4b08; font-weight:700;">Σε αναμονή πληρωμής</span>
+                {% elif r.payment_status == "failed" %}
+                  <span style="color:#7a1f1f; font-weight:700;">Αποτυχημένη πληρωμή</span>
+                {% else %}
+                  {{ r.payment_status }}
+                {% endif %}
+              </p>
+
+              <a href="/tournaments/{{ r.tournament.slug }}/"
+                 style="color:var(--primary); font-weight:600; text-decoration:none;">
+                Δες το τουρνουά
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty">
+          Δεν έχεις δηλώσει συμμετοχή σε κάποιο τουρνουά ακόμη.
+        </div>
+      {% endif %}
+
+      <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e6eaf2;">
+
+      <h3 style="margin-bottom: 14px; color: var(--primary);">⏳ Αιτήματα αναβολής</h3>
+
+      {% if postponements %}
+        <div style="display:grid; gap:12px;">
+          {% for p in postponements %}
+            <div style="padding:16px; border:1px solid var(--border); border-radius:14px; background:#fff;">
+              <p style="margin:0 0 8px;">
+                <strong>Τουρνουά:</strong> {{ p.registration.tournament.title }}
+              </p>
+
+              <p style="margin:0 0 8px;">
+                <strong>Ημερομηνία αναβολής:</strong> {{ p.requested_date|date:"d/m/Y" }}
+              </p>
+
+              <p style="margin:0 0 8px;">
+                <strong>Κατάσταση:</strong>
+                {% if p.status == "pending" %}
+                  <span style="color:#8a4b08; font-weight:700;">Εκκρεμεί</span>
+                {% elif p.status == "approved" %}
+                  <span style="color:#1f5d1f; font-weight:700;">Εγκρίθηκε</span>
+                {% elif p.status == "rejected" %}
+                  <span style="color:#7a1f1f; font-weight:700;">Απορρίφθηκε</span>
+                {% else %}
+                  {{ p.status }}
+                {% endif %}
+              </p>
+
+              <p style="margin:0 0 8px;">
+                <strong>Αιτιολογία:</strong> {{ p.reason }}
+              </p>
+
+              {% if p.admin_notes %}
+                <p style="margin:0 0 8px;">
+                  <strong>Σημειώσεις διαχειριστή:</strong> {{ p.admin_notes }}
+                </p>
+              {% endif %}
+
+              <a href="/tournaments/{{ p.registration.tournament.slug }}/"
+                 style="color:var(--primary); font-weight:600; text-decoration:none;">
+                Δες το τουρνουά
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty">
+          Δεν έχεις αιτήματα αναβολής.
+        </div>
+      {% endif %}
+
+      <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e6eaf2;">
+
+      <h3 style="margin-bottom: 14px; color: var(--primary);">🏋️ Οι προπονήσεις σου</h3>
+
+      {% if training_bookings %}
+        <div style="display:grid; gap:12px;">
+          {% for b in training_bookings %}
+            <div style="padding:16px; border:1px solid var(--border); border-radius:14px; background:#fff;">
+              <p style="margin:0 0 8px;">
+                <strong>Προπόνηση:</strong> {{ b.training_session.title }}
+              </p>
+
+              <p style="margin:0 0 8px;">
+                <strong>Ημερομηνία:</strong> {{ b.training_session.date|date:"d/m/Y H:i" }}
+              </p>
+
+              <p style="margin:0 0 8px;">
+                <strong>Coach:</strong> {{ b.training_session.coach.first_name }} {{ b.training_session.coach.last_name }}
+              </p>
+
+              <p style="margin:0 0 8px;">
+                <strong>Τύπος:</strong>
+                {% if b.training_session.session_type == "individual" %}
+                  Ατομική
+                {% elif b.training_session.session_type == "group" %}
+                  Ομαδική
+                {% else %}
+                  {{ b.training_session.session_type }}
+                {% endif %}
+              </p>
+
+              <a href="/trainings/{{ b.training_session.id }}/"
+                 style="color:var(--primary); font-weight:600; text-decoration:none;">
+                Δες την προπόνηση
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty">
+          Δεν έχεις κάνει κράτηση σε προπονήσεις.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

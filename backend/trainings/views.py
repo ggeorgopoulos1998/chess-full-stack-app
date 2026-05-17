@@ -14,6 +14,18 @@ def training_detail(request, id):
     session = get_object_or_404(TrainingSession, id=id)
 
     if request.method == "POST":
+        if not session.is_open:
+            return redirect(f"/trainings/{session.id}/?closed=1")
+
+        email = request.POST.get("email")
+
+        existing_booking = session.bookings.filter(email=email).exists()
+        if request.user.is_authenticated:
+            existing_booking = existing_booking or session.bookings.filter(user=request.user).exists()
+
+        if existing_booking:
+            return redirect(f"/trainings/{session.id}/?duplicate=1")
+
         if session.bookings.count() >= session.max_participants:
             return redirect(f"/trainings/{session.id}/?full=1")
 
@@ -38,4 +50,6 @@ def training_detail(request, id):
         "form": form,
         "success": request.GET.get("success") == "1",
         "full_message": request.GET.get("full") == "1",
+        "closed_message": request.GET.get("closed") == "1",
+        "duplicate_message": request.GET.get("duplicate") == "1",
     })

@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}ΑΣΟΠ ΔΙΑΣ{% endblock %}</title>
   <style>
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-2);
+      box-shadow: 0 0 0 3px rgba(31, 95, 191, 0.10);
+    }
 
-input:focus, textarea:focus, select:focus {
-  outline: none;
-  border-color: var(--primary-2);
-  box-shadow: 0 0 0 3px rgba(31, 95, 191, 0.10);
-}
     :root {
       --bg: #f4f7fb;
       --card: #ffffff;
@@ -25,22 +25,23 @@ input:focus, textarea:focus, select:focus {
     }
 
     input, textarea, select {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid #d9e2f0;
-  border-radius: 12px;
-  font-size: 15px;
-  background: white;
-  color: var(--text);
-}
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d9e2f0;
+      border-radius: 12px;
+      font-size: 15px;
+      background: white;
+      color: var(--text);
+    }
 
-input:focus, textarea:focus, select:focus {
-  outline: none;
-  border-color: var(--primary-2);
-  box-shadow: 0 0 0 3px rgba(31, 95, 191, 0.10);
-}
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-2);
+      box-shadow: 0 0 0 3px rgba(31, 95, 191, 0.10);
+    }
 
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Inter, Arial, sans-serif;
@@ -238,48 +239,56 @@ input:focus, textarea:focus, select:focus {
   <header class="topbar">
     <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
 
-  <div class="brand">
-    <div class="logo">ΑΣ</div>
-    <div>
-      <h1>ΑΣΟΠ ΔΙΑΣ</h1>
-      <p>Online δήλωση συμμετοχής σε τουρνουά σκακιού</p>
+      <div class="brand">
+        <div class="logo">ΑΣ</div>
+        <div>
+          <h1>ΑΣΟΠ ΔΙΑΣ</h1>
+          <p>Online δήλωση συμμετοχής σε τουρνουά σκακιού</p>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px; align-items:center;">
+        <a href="{% url 'tournament_calendar' %}"
+           style="color:white; text-decoration:none; font-weight:600;">
+          Calendar
+        </a>
+
+        <a href="/trainings/"
+           style="color:white; text-decoration:none; font-weight:600;">
+          Προπονήσεις
+        </a>
+
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard' %}"
+             style="color:white; text-decoration:none; font-weight:600;">
+            Dashboard
+          </a>
+
+          <span style="color:white;">
+            Γεια σου, {{ user.first_name|default:user.username }}
+          </span>
+
+          <form method="post" action="{% url 'logout' %}" style="margin:0;">
+            {% csrf_token %}
+            <button type="submit"
+              style="background:white; color:var(--primary); border:0; padding:10px 14px; border-radius:10px; font-weight:600; cursor:pointer;">
+              Αποσύνδεση
+            </button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}"
+             style="color:white; text-decoration:none; font-weight:600;">
+            Σύνδεση
+          </a>
+
+          <a href="{% url 'signup' %}"
+             style="background:white; color:var(--primary); text-decoration:none; padding:10px 14px; border-radius:10px; font-weight:700;">
+            Εγγραφή
+          </a>
+        {% endif %}
+      </div>
+
     </div>
-  </div>
-
-  <!-- AUTH LINKS -->
-  <div style="display:flex; gap:12px; align-items:center;">
-  <a href="{% url 'tournament_calendar' %}"
-     style="color:white; text-decoration:none; font-weight:600;">
-    Calendar
-  </a>
-    <a href="/trainings/" style="color:white;">Προπονήσεις</a>
-
-  {% if user.is_authenticated %}
-    <span style="color:white;">
-      Γεια σου, {{ user.first_name|default:user.username }}
-    </span>
-
-    <form method="post" action="{% url 'logout' %}" style="margin:0;">
-      {% csrf_token %}
-      <button type="submit"
-        style="background:white; color:var(--primary); border:0; padding:10px 14px; border-radius:10px; font-weight:600; cursor:pointer;">
-        Αποσύνδεση
-      </button>
-    </form>
-
-  {% else %}
-    <a href="{% url 'login' %}"
-       style="color:white; text-decoration:none; font-weight:600;">
-      Σύνδεση
-    </a>
-
-    <a href="{% url 'signup' %}"
-       style="background:white; color:var(--primary); text-decoration:none; padding:10px 14px; border-radius:10px; font-weight:700;">
-      Εγγραφή
-    </a>
-  {% endif %}
-</div>
-</div>
   </header>
 
   {% block content %}{% endblock %}

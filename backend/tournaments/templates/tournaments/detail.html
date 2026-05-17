@@ -43,7 +43,59 @@
         </div>
       {% endif %}
 
-      {% if not is_full and tournament.is_open %}
+      {% if duplicate_message %}
+        <div style="margin: 20px 0; padding: 14px 16px; background: #fff4e8; border: 1px solid #ffd7ad; border-radius: 12px; color: #8a4b08;">
+          Έχετε ήδη δηλώσει συμμετοχή σε αυτό το τουρνουά.
+        </div>
+      {% endif %}
+
+      {% if closed_message %}
+        <div style="margin: 20px 0; padding: 14px 16px; background: #ffe8e8; border: 1px solid #e2b7b7; border-radius: 12px; color: #7a1f1f;">
+          Οι εγγραφές για αυτό το τουρνουά είναι κλειστές.
+        </div>
+      {% endif %}
+
+      {% if error_message == "missing_fields" %}
+        <div style="margin: 20px 0; padding: 14px 16px; background: #fff4e8; border: 1px solid #ffd7ad; border-radius: 12px; color: #8a4b08;">
+          Παρακαλώ συμπληρώστε όλα τα υποχρεωτικά πεδία.
+        </div>
+      {% endif %}
+
+      {% if error_message == "payment_error" %}
+        <div style="margin: 20px 0; padding: 14px 16px; background: #ffe8e8; border: 1px solid #e2b7b7; border-radius: 12px; color: #7a1f1f;">
+          Παρουσιάστηκε σφάλμα κατά τη δημιουργία της πληρωμής. Προσπαθήστε ξανά.
+        </div>
+      {% endif %}
+
+             {% if has_user_registration %}
+        {% if user_registration_status == "pending" %}
+          <div style="margin: 20px 0; padding: 14px 16px; background: #fff4e8; border: 1px solid #ffd7ad; border-radius: 12px; color: #8a4b08;">
+            Η εγγραφή σου είναι σε αναμονή πληρωμής.
+            Μπορείς να συνεχίσεις την πληρωμή ή να δεις την κατάσταση από το
+            <a href="{% url 'dashboard' %}" style="color: inherit; font-weight: 700;">Dashboard</a>.
+
+            <div style="margin-top:12px;">
+              <a href="{% url 'resume_checkout' tournament.slug %}" class="btn" style="text-decoration:none;">
+                Ολοκλήρωση πληρωμής
+              </a>
+            </div>
+          </div>
+        {% elif user_registration_status == "paid" %}
+          <div style="margin: 20px 0; padding: 14px 16px; background: #e8f7e8; border: 1px solid #b7e2b7; border-radius: 12px; color: #1f5d1f;">
+            Η συμμετοχή σου έχει πληρωθεί και επιβεβαιωθεί.
+          </div>
+        {% elif user_registration_status == "free" %}
+          <div style="margin: 20px 0; padding: 14px 16px; background: #e8f7e8; border: 1px solid #b7e2b7; border-radius: 12px; color: #1f5d1f;">
+            Έχεις ήδη δηλώσει συμμετοχή σε αυτό το τουρνουά.
+          </div>
+        {% elif user_registration_status == "failed" %}
+          <div style="margin: 20px 0; padding: 14px 16px; background: #ffe8e8; border: 1px solid #e2b7b7; border-radius: 12px; color: #7a1f1f;">
+            Η πληρωμή σου απέτυχε. Προσπάθησε ξανά ή έλεγξε το Dashboard.
+          </div>
+        {% endif %}
+      {% endif %}
+
+      {% if show_registration_form %}
         <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e6eaf2;">
 
         <h3 style="margin-bottom: 14px; color: var(--primary);">Δήλωση συμμετοχής</h3>

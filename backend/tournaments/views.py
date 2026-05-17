@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+
 from .forms import RegistrationForm, TournamentPostponementRequestForm
 from .models import Tournament, Registration, TournamentPostponementRequest
 
@@ -52,7 +53,32 @@ def tournament_detail(request, slug):
 
     if request.method == "POST":
         if "register_submit" in request.POST:
-            if tournament.registrations.count() >= tournament.max_players:
+            if not tournament.is_open:
+                return redirect(f"/tournaments/{tournament.slug}/?closed=1")
+
+            existing_registration = False
+            email = request.POST.get("email")
+            full_name = request.POST.get("full_name")
+
+            if email and full_name and tournament.registrations.filter(
+                email=email,
+                full_name=full_name
+            ).exists():
+                existing_registration = True
+
+            if request.user.is_authenticated and tournament.registrations.filter(
+                user=request.user
+            ).exists():
+                existing_registration = True
+
+            if existing_registration:
+                return redirect(f"/tournaments/{tournament.slug}/?duplicate=1")
+
+            occupied_count = tournament.registrations.filter(
+                payment_status__in=["paid", "free"]
+            ).count()
+
+            if occupied_count >= tournament.max_players:
                 return redirect(f"/tournaments/{tournament.slug}/?full=1")
 
             form = RegistrationForm(request.POST)
@@ -63,6 +89,7 @@ def tournament_detail(request, slug):
                     registration.user = request.user
                 registration.save()
                 return redirect(f"/tournaments/{tournament.slug}/?success=1")
+
             postponement_form = TournamentPostponementRequestForm()
 
         elif "postponement_submit" in request.POST:
@@ -91,8 +118,18 @@ def tournament_detail(request, slug):
     if postponement_form is None:
         postponement_form = TournamentPostponementRequestForm()
 
-    registrations_count = tournament.registrations.count()
+    registrations_count = tournament.registrations.filter(
+        payment_status__in=["paid", "free"]
+    ).count()
     is_full = registrations_count >= tournament.max_players
+
+    has_user_registration = user_registration is not None
+    user_registration_status = user_registration.payment_status if user_registration else None
+    show_registration_form = (
+        tournament.is_open and
+        not is_full and
+        not has_user_registration
+    )
 
     return render(request, "tournaments/detail.html", {
         "tournament": tournament,
@@ -101,10 +138,16 @@ def tournament_detail(request, slug):
         "user_registration": user_registration,
         "user_postponements": user_postponements,
         "existing_pending_request": existing_pending_request,
+        "has_user_registration": has_user_registration,
+        "user_registration_status": user_registration_status,
+        "show_registration_form": show_registration_form,
         "success": request.GET.get("success") == "1",
         "postponement_success": request.GET.get("postponement_success") == "1",
         "already_pending": request.GET.get("already_pending") == "1",
         "full_message": request.GET.get("full") == "1",
+        "duplicate_message": request.GET.get("duplicate") == "1",
+        "closed_message": request.GET.get("closed") == "1",
+        "error_message": request.GET.get("error"),
         "is_full": is_full,
         "registrations_count": registrations_count,
     })

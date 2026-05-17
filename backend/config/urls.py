@@ -20,9 +20,9 @@ urlpatterns = [
     ),
     path(
         "accounts/logout/",
-        auth_views.LogoutView.as_view(),
+        auth_views.LogoutView.as_view(next_page="/tournaments/"),
         name="logout"
-    ),
+),
 
     # Stripe webhook
     path("webhook/stripe/", stripe_webhook, name="stripe_webhook"),
