@@ -11,6 +11,27 @@
         Δείτε τις διαθέσιμες διοργανώσεις του συλλόγου και ενημερωθείτε για
         ημερομηνίες, κατηγορίες, κόστος συμμετοχής και βασικές λεπτομέρειες.
       </p>
+
+      <!-- 🔍 DATE SEARCH -->
+      <form method="get" style="margin-top: 24px; display: flex; gap: 12px; align-items: end;">
+        <div>
+          <label for="date"><strong>Αναζήτηση με ημερομηνία</strong></label><br>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value="{{ selected_date|default:'' }}"
+          >
+        </div>
+
+        <button type="submit" class="btn" style="border:0; cursor:pointer;">
+          Αναζήτηση
+        </button>
+
+        {% if selected_date %}
+          <a href="{% url 'tournament_list' %}" class="btn">Καθαρισμός</a>
+        {% endif %}
+      </form>
     </div>
   </div>
 </section>
@@ -22,8 +43,12 @@
         {% for t in tournaments %}
           <article class="card">
             <span class="badge">{{ t.category|title }}</span>
+
             <h3>{{ t.title }}</h3>
-            <p>{{ t.description }}</p>
+
+            {% if t.description %}
+              <p>{{ t.description }}</p>
+            {% endif %}
 
             <ul class="meta">
               <li><strong>Ημερομηνία:</strong> {{ t.date|date:"d/m/Y H:i" }}</li>
@@ -39,7 +64,13 @@
         {% endfor %}
       </div>
     {% else %}
-      <div class="empty">Δεν υπάρχουν τουρνουά αυτή τη στιγμή.</div>
+      <div class="empty">
+        {% if selected_date %}
+          Δεν υπάρχουν τουρνουά για την επιλεγμένη ημερομηνία.
+        {% else %}
+          Δεν υπάρχουν τουρνουά αυτή τη στιγμή.
+        {% endif %}
+      </div>
     {% endif %}
   </div>
 </section>

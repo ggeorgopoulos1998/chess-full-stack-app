@@ -8,6 +8,27 @@
     <div class="hero-card">
       <h2>Προπονήσεις</h2>
       <p>Δείτε διαθέσιμες προπονήσεις με προπονητές και επιλέξτε αυτή που σας ενδιαφέρει.</p>
+
+      <!-- 🔍 DATE FILTER -->
+      <form method="get" style="margin-top: 24px; display: flex; gap: 12px; align-items: end;">
+        <div>
+          <label for="date"><strong>Αναζήτηση με ημερομηνία</strong></label><br>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value="{{ selected_date|default:'' }}"
+          >
+        </div>
+
+        <button type="submit" class="btn" style="border:0; cursor:pointer;">
+          Αναζήτηση
+        </button>
+
+        {% if selected_date %}
+          <a href="{% url 'training_list' %}" class="btn">Καθαρισμός</a>
+        {% endif %}
+      </form>
     </div>
   </div>
 </section>
@@ -19,8 +40,12 @@
         {% for s in sessions %}
           <article class="card">
             <span class="badge">{{ s.session_type|title }}</span>
+
             <h3>{{ s.title }}</h3>
-            <p>{{ s.description }}</p>
+
+            {% if s.description %}
+              <p>{{ s.description }}</p>
+            {% endif %}
 
             <ul class="meta">
               <li><strong>Προπονητής:</strong> {{ s.coach.first_name }} {{ s.coach.last_name }}</li>

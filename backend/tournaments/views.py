@@ -4,31 +4,28 @@ from .forms import RegistrationForm, TournamentPostponementRequestForm
 from .models import Tournament, Registration, TournamentPostponementRequest
 
 
+# 🔹 LIST + DATE FILTER
 def tournament_list(request):
-    tournaments = Tournament.objects.all()
-    return render(request, "tournaments/list.html", {
-        "tournaments": tournaments
-    })
-
-
-def tournament_calendar(request):
     selected_date = request.GET.get("date")
-    tournaments = []
+
+    tournaments = Tournament.objects.all().order_by("date")
 
     if selected_date:
         from datetime import datetime
+
         try:
             parsed_date = datetime.strptime(selected_date, "%Y-%m-%d").date()
-            tournaments = Tournament.objects.filter(date__date=parsed_date).order_by("date")
+            tournaments = tournaments.filter(date__date=parsed_date)
         except ValueError:
             selected_date = None
 
-    return render(request, "tournaments/calendar.html", {
-        "selected_date": selected_date,
+    return render(request, "tournaments/list.html", {
         "tournaments": tournaments,
+        "selected_date": selected_date,
     })
 
 
+# 🔹 DETAIL VIEW (UNCHANGED LOGIC)
 def tournament_detail(request, slug):
     tournament = get_object_or_404(Tournament, slug=slug)
 
@@ -52,6 +49,8 @@ def tournament_detail(request, slug):
             existing_pending_request = user_postponements.filter(status="pending").exists()
 
     if request.method == "POST":
+
+        # ✅ REGISTER
         if "register_submit" in request.POST:
             if not tournament.is_open:
                 return redirect(f"/tournaments/{tournament.slug}/?closed=1")
@@ -85,13 +84,16 @@ def tournament_detail(request, slug):
             if form.is_valid():
                 registration = form.save(commit=False)
                 registration.tournament = tournament
+
                 if request.user.is_authenticated:
                     registration.user = request.user
+
                 registration.save()
                 return redirect(f"/tournaments/{tournament.slug}/?success=1")
 
             postponement_form = TournamentPostponementRequestForm()
 
+        # ✅ POSTPONEMENT
         elif "postponement_submit" in request.POST:
             if not request.user.is_authenticated or not user_registration:
                 return redirect(f"/tournaments/{tournament.slug}/")
@@ -100,17 +102,21 @@ def tournament_detail(request, slug):
                 return redirect(f"/tournaments/{tournament.slug}/?already_pending=1")
 
             postponement_form = TournamentPostponementRequestForm(request.POST)
+
             if postponement_form.is_valid():
                 postponement_request = postponement_form.save(commit=False)
                 postponement_request.registration = user_registration
                 postponement_request.user = request.user
                 postponement_request.save()
+
                 return redirect(f"/tournaments/{tournament.slug}/?postponement_success=1")
 
             form = RegistrationForm()
+
         else:
             form = RegistrationForm()
             postponement_form = TournamentPostponementRequestForm()
+
     else:
         form = RegistrationForm()
         postponement_form = TournamentPostponementRequestForm()
@@ -121,10 +127,12 @@ def tournament_detail(request, slug):
     registrations_count = tournament.registrations.filter(
         payment_status__in=["paid", "free"]
     ).count()
+
     is_full = registrations_count >= tournament.max_players
 
     has_user_registration = user_registration is not None
     user_registration_status = user_registration.payment_status if user_registration else None
+
     show_registration_form = (
         tournament.is_open and
         not is_full and

@@ -1,12 +1,25 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from datetime import datetime
+
 from .models import TrainingSession
 from .forms import TrainingBookingForm
 
 
 def training_list(request):
+    selected_date = request.GET.get("date")
+
     sessions = TrainingSession.objects.filter(is_open=True).order_by("date")
+
+    if selected_date:
+        try:
+            parsed_date = datetime.strptime(selected_date, "%Y-%m-%d").date()
+            sessions = sessions.filter(date__date=parsed_date)
+        except ValueError:
+            selected_date = None
+
     return render(request, "trainings/list.html", {
-        "sessions": sessions
+        "sessions": sessions,
+        "selected_date": selected_date,
     })
 
 
@@ -33,8 +46,10 @@ def training_detail(request, id):
         if form.is_valid():
             booking = form.save(commit=False)
             booking.training_session = session
+
             if request.user.is_authenticated:
                 booking.user = request.user
+
             booking.save()
             return redirect(f"/trainings/{session.id}/?success=1")
     else:

@@ -248,10 +248,11 @@
       </div>
 
       <div style="display:flex; gap:12px; align-items:center;">
-        <a href="{% url 'tournament_calendar' %}"
-           style="color:white; text-decoration:none; font-weight:600;">
-          Calendar
-        </a>
+  <a href="{% url 'tournament_list' %}"
+     style="color:white; text-decoration:none; font-weight:600;">
+    Τουρνουά
+  </a>
+</div>
 
         <a href="/trainings/"
            style="color:white; text-decoration:none; font-weight:600;">
@@ -261,7 +262,7 @@
         {% if user.is_authenticated %}
           <a href="{% url 'dashboard' %}"
              style="color:white; text-decoration:none; font-weight:600;">
-            Dashboard
+            Profile
           </a>
 
           <span style="color:white;">
