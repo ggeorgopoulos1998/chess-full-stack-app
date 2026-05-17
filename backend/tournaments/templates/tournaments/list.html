@@ -12,7 +12,6 @@
         ημερομηνίες, κατηγορίες, κόστος συμμετοχής και βασικές λεπτομέρειες.
       </p>
 
-      <!-- 🔍 DATE SEARCH -->
       <form method="get" style="margin-top: 24px; display: flex; gap: 12px; align-items: end;">
         <div>
           <label for="date"><strong>Αναζήτηση με ημερομηνία</strong></label><br>
@@ -42,6 +41,15 @@
       <div class="grid">
         {% for t in tournaments %}
           <article class="card">
+
+            {% if t.image %}
+              <img
+                src="{{ t.image.url }}"
+                alt="{{ t.title }}"
+                style="width:100%; height:220px; object-fit:cover; border-radius:14px; margin-bottom:16px;"
+              >
+            {% endif %}
+
             <span class="badge">{{ t.category|title }}</span>
 
             <h3>{{ t.title }}</h3>

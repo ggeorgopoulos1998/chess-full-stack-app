@@ -7,6 +7,12 @@ class Tournament(models.Model):
     slug = models.SlugField(unique=True)
     description = models.TextField()
 
+    image = models.ImageField(
+        upload_to="tournaments/",
+        blank=True,
+        null=True
+    )
+
     category = models.CharField(max_length=100)
     location = models.CharField(max_length=255)
 
@@ -57,7 +63,6 @@ class Registration(models.Model):
     elo = models.IntegerField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
 
-    # Payment fields
     payment_status = models.CharField(
         max_length=20,
         choices=PAYMENT_STATUS_CHOICES,
