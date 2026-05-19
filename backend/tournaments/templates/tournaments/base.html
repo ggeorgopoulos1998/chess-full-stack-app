@@ -107,10 +107,14 @@
     }
 
     .btn-outline {
-      background: white;
-      color: var(--primary);
-      font-weight: 700;
-    }
+  background: white;
+  color: var(--primary) !important;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: auto;
+}
 
     .hero {
       padding: 44px 0 26px;
@@ -138,11 +142,13 @@
     }
 
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 22px;
-      padding-bottom: 40px;
-    }
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 350px));
+  gap: 22px;
+  justify-content: center;
+  align-items: start;
+  padding-bottom: 40px;
+}
 
     .card {
       background: var(--card);
@@ -181,6 +187,16 @@
       padding: 28px;
       color: var(--muted);
     }
+
+    .error-box {
+  background: #ffecec;
+  border: 1px solid #ffb3b3;
+  color: #7a1f1f;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
 
     @media (max-width: 720px) {
       .hero-card h2 { font-size: 30px; }
