@@ -16,11 +16,14 @@ stripe.api_key = os.environ.get("STRIPE_API_KEY")
 
 def _occupied_seats_count(tournament):
     """
-    Count registrations that actually consume a seat.
-    For now, only paid and free registrations count as occupied seats.
+    Count registrations that reserve a seat.
+
+    paid = paid online
+    free = free tournament registration
+    pending = cash payment at tournament / unfinished Stripe payment
     """
     return tournament.registrations.filter(
-        payment_status__in=["paid", "free"]
+        payment_status__in=["paid", "free", "pending"]
     ).count()
 
 
@@ -72,20 +75,15 @@ def _mark_registration_paid(session_id, tournament=None):
 
 
 def create_checkout_session(request, slug):
-    """
-    Create a Stripe checkout session for tournament registration.
-    This view handles the form submission and redirects to Stripe.
-    """
     if request.method != "POST":
         return redirect("tournament_detail", slug=slug)
 
     tournament = get_object_or_404(Tournament, slug=slug)
 
-    # Do not allow checkout for closed tournaments
     if not tournament.is_open:
         return redirect(f"/tournaments/{slug}/?closed=1")
 
-    # Get form data from POST
+    # Form data
     full_name = request.POST.get("full_name")
     email = request.POST.get("email")
     phone = request.POST.get("phone")
@@ -93,11 +91,12 @@ def create_checkout_session(request, slug):
     elo = request.POST.get("elo")
     notes = request.POST.get("notes", "")
 
-    # Validate required fields
+    # ✅ NEW: payment method
+    payment_method = request.POST.get("payment_method", "stripe")
+
     if not all([full_name, email, phone]):
         return redirect(f"/tournaments/{slug}/?error=missing_fields")
 
-    # Prevent duplicate registrations
     if _has_existing_registration(
         tournament=tournament,
         user=request.user,
@@ -105,14 +104,12 @@ def create_checkout_session(request, slug):
     ):
         return redirect(f"/tournaments/{slug}/?duplicate=1")
 
-    # Check if tournament is full
     if _occupied_seats_count(tournament) >= tournament.max_players:
         return redirect(f"/tournaments/{slug}/?full=1")
 
-    # Convert elo to integer if provided
     elo_value = int(elo) if elo and elo.strip() else None
 
-    # If tournament is free, create registration directly
+    # ✅ FREE TOURNAMENT
     if tournament.price_euro == 0:
         Registration.objects.create(
             tournament=tournament,
@@ -127,7 +124,22 @@ def create_checkout_session(request, slug):
         )
         return redirect(f"/tournaments/{slug}/?success=1")
 
-    # Create pending registration
+    # ✅ CASH PAYMENT (NEW FEATURE)
+    if payment_method == "cash":
+        Registration.objects.create(
+            tournament=tournament,
+            user=request.user if request.user.is_authenticated else None,
+            full_name=full_name,
+            email=email,
+            phone=phone,
+            club=club or None,
+            elo=elo_value,
+            notes=notes or None,
+            payment_status="pending"
+        )
+        return redirect(f"/tournaments/{slug}/?success=1&cash=1")
+
+    # ✅ STRIPE FLOW (unchanged)
     registration = Registration.objects.create(
         tournament=tournament,
         user=request.user if request.user.is_authenticated else None,
@@ -140,7 +152,6 @@ def create_checkout_session(request, slug):
         payment_status="pending"
     )
 
-    # Build dynamic URLs
     host = request.get_host()
     scheme = "https" if request.is_secure() else "http"
     base_url = f"{scheme}://{host}"
@@ -155,7 +166,6 @@ def create_checkout_session(request, slug):
     )
 
     try:
-        # Amount in cents (Stripe requires smallest currency unit)
         amount_cents = int(tournament.price_euro * 100)
 
         checkout_session = stripe.checkout.Session.create(
@@ -182,11 +192,9 @@ def create_checkout_session(request, slug):
             }
         )
 
-        # Update registration with session ID
         registration.stripe_session_id = checkout_session.id
         registration.save(update_fields=["stripe_session_id"])
 
-        # Create payment transaction record
         PaymentTransaction.objects.create(
             registration=registration,
             stripe_session_id=checkout_session.id,
@@ -194,19 +202,11 @@ def create_checkout_session(request, slug):
             currency="EUR",
             status="initiated",
             payment_status="unpaid",
-            metadata={
-                "tournament_id": tournament.id,
-                "tournament_title": tournament.title,
-                "full_name": full_name,
-                "email": email,
-            }
         )
 
-        # Redirect to Stripe Checkout
         return redirect(checkout_session.url)
 
     except stripe.error.StripeError:
-        # Delete the pending registration on Stripe error
         registration.delete()
         return redirect(f"/tournaments/{slug}/?error=payment_error")
 

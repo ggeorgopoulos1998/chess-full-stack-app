@@ -9,15 +9,16 @@
 
   <style>
     :root {
-      --bg: #f4f7fb;
+      --bg: #fff8f1;
       --card: #ffffff;
-      --primary: #123b7a;
-      --primary-2: #1f5fbf;
+      --primary: #2b2118;
+      --primary-2: #8b4513;
       --accent: #f28c28;
-      --text: #172033;
-      --muted: #667085;
-      --border: #e6eaf2;
-      --shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+      --accent-dark: #d96f12;
+      --text: #1f2933;
+      --muted: #6b5f55;
+      --border: #f0ddc8;
+      --shadow: 0 10px 30px rgba(70, 40, 10, 0.10);
       --radius: 18px;
     }
 
@@ -26,14 +27,14 @@
     body {
       margin: 0;
       font-family: Inter, Arial, sans-serif;
-      background: linear-gradient(180deg, #eef3fb 0%, #f7f9fc 100%);
+      background: linear-gradient(180deg, #fff4e8 0%, #fffaf5 100%);
       color: var(--text);
     }
 
     input, textarea, select {
       width: 100%;
       padding: 12px 14px;
-      border: 1px solid #d9e2f0;
+      border: 1px solid #e7d6c2;
       border-radius: 12px;
       font-size: 15px;
       background: white;
@@ -41,12 +42,13 @@
 
     input:focus, textarea:focus, select:focus {
       outline: none;
-      border-color: var(--primary-2);
-      box-shadow: 0 0 0 3px rgba(31, 95, 191, 0.10);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.18);
     }
 
+    /* 🔥 NEW NAVBAR */
     .topbar {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
+      background: linear-gradient(135deg, #2b2118 0%, #8b4513 55%, #f28c28 100%);
       color: white;
       padding: 18px 0;
       box-shadow: var(--shadow);
@@ -95,6 +97,7 @@
       font-weight: 600;
     }
 
+    /* 🔥 BUTTONS */
     .btn {
       background: var(--accent);
       color: white;
@@ -104,25 +107,30 @@
       font-weight: 700;
       border: 0;
       cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--accent-dark);
     }
 
     .btn-outline {
-  background: white;
-  color: var(--primary) !important;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: auto;
-}
+      background: white;
+      color: var(--primary) !important;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     .hero {
       padding: 44px 0 26px;
     }
 
     .hero-card {
-      background: var(--card);
+      background: linear-gradient(135deg, #ffffff, #fff4e8);
       border: 1px solid var(--border);
+      border-left: 6px solid var(--accent);
       border-radius: 28px;
       padding: 36px;
       box-shadow: var(--shadow);
@@ -131,7 +139,7 @@
     .hero-card h2 {
       margin: 0 0 10px;
       font-size: 40px;
-      color: var(--primary);
+      color: var(--primary-2);
     }
 
     .hero-card p {
@@ -142,28 +150,35 @@
     }
 
     .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 350px));
-  gap: 22px;
-  justify-content: center;
-  align-items: start;
-  padding-bottom: 40px;
-}
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 350px));
+      gap: 22px;
+      justify-content: center;
+      align-items: start;
+      padding-bottom: 40px;
+    }
 
     .card {
       background: var(--card);
       border: 1px solid var(--border);
+      border-top: 4px solid var(--accent);
       border-radius: var(--radius);
       padding: 22px;
       box-shadow: var(--shadow);
+      transition: transform 0.15s ease;
     }
 
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    /* 🔥 BADGES */
     .badge {
       display: inline-block;
       padding: 8px 12px;
       border-radius: 999px;
-      background: #eaf2ff;
-      color: var(--primary);
+      background: #fff0dc;
+      color: #8b4513;
       font-size: 13px;
       font-weight: 600;
       margin-bottom: 14px;
@@ -177,26 +192,26 @@
 
     .meta li {
       padding: 7px 0;
-      border-bottom: 1px solid #f0f2f7;
+      border-bottom: 1px solid #f0e2d2;
     }
 
     .empty {
       background: white;
-      border: 1px dashed #cfd8e6;
+      border: 1px dashed #e0cbb3;
       border-radius: 16px;
       padding: 28px;
       color: var(--muted);
     }
 
     .error-box {
-  background: #ffecec;
-  border: 1px solid #ffb3b3;
-  color: #7a1f1f;
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  font-weight: 500;
-}
+      background: #ffecec;
+      border: 1px solid #ffb3b3;
+      color: #7a1f1f;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
 
     @media (max-width: 720px) {
       .hero-card h2 { font-size: 30px; }
@@ -208,7 +223,6 @@
   <header class="topbar">
     <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
 
-      <!-- ✅ BRAND (LOGO + TEXT) -->
       <div class="brand">
         <img src="{% static 'images/asop_dias_logo.png' %}" alt="ΑΣΟΠ ΔΙΑΣ">
 
@@ -218,7 +232,6 @@
         </div>
       </div>
 
-      <!-- ✅ NAVIGATION -->
       <div class="nav">
         <a href="{% url 'tournament_list' %}">Τουρνουά</a>
         <a href="{% url 'training_list' %}">Προπονήσεις</a>

@@ -125,7 +125,7 @@ def tournament_detail(request, slug):
         postponement_form = TournamentPostponementRequestForm()
 
     registrations_count = tournament.registrations.filter(
-        payment_status__in=["paid", "free"]
+        payment_status__in=["paid", "free", "pending"]
     ).count()
 
     is_full = registrations_count >= tournament.max_players
