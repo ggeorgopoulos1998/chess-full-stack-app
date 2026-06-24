@@ -5,3 +5,5 @@ stripe>=7.0.0
 gunicorn
 whitenoise
 dj-database-url
+cloudinary
+django-cloudinary-storage
