@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class Tournament(models.Model):
@@ -7,8 +8,9 @@ class Tournament(models.Model):
     slug = models.SlugField(unique=True)
     description = models.TextField()
 
-    image = models.ImageField(
-        upload_to="tournaments/",
+    image = CloudinaryField(
+        "image",
+        folder="tournaments",
         blank=True,
         null=True
     )
