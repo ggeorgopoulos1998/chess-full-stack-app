@@ -58,7 +58,7 @@
 
         <h3 style="margin-bottom: 14px; color: var(--primary);">Δήλωση συμμετοχής</h3>
 
-        <form action="{% url 'tournament_checkout' slug=tournament.slug %}" method="post" style="display: grid; gap: 14px;">
+        <form method="post" style="display: grid; gap: 14px;">
           {% csrf_token %}
 
           <div><label>Ονοματεπώνυμο</label>{{ form.full_name }}</div>
@@ -68,20 +68,9 @@
           <div><label>ELO</label>{{ form.elo }}</div>
           <div><label>Σχόλια</label>{{ form.notes }}</div>
 
-          {% if tournament.price_euro > 0 %}
-  <button type="submit" name="payment_method" value="stripe" class="btn">
-    Πληρωμή online με κάρτα - {{ tournament.price_euro }}€
-  </button>
-
-  <button type="submit" name="payment_method" value="cash" class="btn" style="background:#1f5d1f;">
-    Πληρωμή με μετρητά
-  </button>
-{% else %}
-  <button type="submit" class="btn">
-    Δωρεάν Εγγραφή
-  </button>
-{% endif %}
-        </form>
+          <button type="submit" name="register_submit" class="btn">
+  Ολοκλήρωση δήλωσης συμμετοχής
+</button>
 
       {% elif user_registration %}
 

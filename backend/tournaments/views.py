@@ -88,6 +88,7 @@ def tournament_detail(request, slug):
                 if request.user.is_authenticated:
                     registration.user = request.user
 
+                registration.payment_status = "free"
                 registration.save()
                 return redirect(f"/tournaments/{tournament.slug}/?success=1")
 
