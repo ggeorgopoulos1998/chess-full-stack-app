@@ -213,15 +213,91 @@
       font-weight: 500;
     }
 
-    @media (max-width: 720px) {
-      .hero-card h2 { font-size: 30px; }
-    }
+    .header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+
+@media (max-width: 720px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 16px;
+  }
+
+  .topbar {
+    padding: 12px 0;
+  }
+
+  .header-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .brand {
+    justify-content: center;
+  }
+
+  .brand h1 {
+    font-size: 20px;
+  }
+
+  .brand p {
+    font-size: 12px;
+  }
+
+  .nav {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .nav a,
+  .nav span,
+  .nav button {
+    font-size: 13px;
+  }
+
+  .hero {
+    padding: 26px 0 18px;
+  }
+
+  .hero-card {
+    padding: 24px 18px;
+    border-radius: 20px;
+  }
+
+  .hero-card h2 {
+    font-size: 28px;
+  }
+
+  .hero-card p {
+    font-size: 15px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    padding: 0 16px 32px;
+  }
+
+  .card {
+    width: 100%;
+  }
+}
   </style>
 </head>
 
 <body>
   <header class="topbar">
-    <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
+    <div class="container header-inner">
 
       <div class="brand">
         <img src="{% static 'images/asop_dias_logo.png' %}" alt="ΑΣΟΠ ΔΙΑΣ">
