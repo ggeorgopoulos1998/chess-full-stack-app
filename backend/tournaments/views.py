@@ -1,7 +1,35 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404, redirect
 
 from .forms import RegistrationForm, TournamentPostponementRequestForm
 from .models import Tournament, Registration, TournamentPostponementRequest
+
+def send_registration_notification(registration, tournament):
+    subject = f"Νέα εγγραφή στο τουρνουά: {tournament}"
+
+    message = f"""
+Έγινε νέα εγγραφή σε τουρνουά.
+
+Τουρνουά: {tournament}
+Ημερομηνία: {tournament.date}
+
+Ονοματεπώνυμο: {registration.full_name}
+Email: {registration.email}
+Κατάσταση πληρωμής: {registration.payment_status}
+Κωδικός εγγραφής: {registration.pk}
+""".strip()
+
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.TOURNAMENT_ADMIN_EMAIL],
+            fail_silently=False,
+        )
+    except Exception as error:
+        print(f"Registration email failed: {error}")
 
 
 # 🔹 LIST + DATE FILTER
@@ -90,6 +118,9 @@ def tournament_detail(request, slug):
 
                 registration.payment_status = "free"
                 registration.save()
+
+                send_registration_notification(registration, tournament)
+
                 return redirect(f"/tournaments/{tournament.slug}/?success=1")
 
             postponement_form = TournamentPostponementRequestForm()
