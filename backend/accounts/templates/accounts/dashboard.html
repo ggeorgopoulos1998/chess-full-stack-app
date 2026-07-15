@@ -34,7 +34,7 @@
               <p style="margin:0 0 8px;">
                 <strong>Κατάσταση πληρωμής:</strong>
                 {% if r.payment_status == "free" %}
-                  <span style="color:#1f5d1f; font-weight:700;">Δωρεάν</span>
+                  <span style="color:#1f5d1f; font-weight:700;">Πληρωμή στον όμιλο</span>
                 {% elif r.payment_status == "paid" %}
                   <span style="color:#1f5d1f; font-weight:700;">Πληρωμένο</span>
                 {% elif r.payment_status == "pending" %}
