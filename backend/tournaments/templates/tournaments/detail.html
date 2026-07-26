@@ -59,51 +59,93 @@
         <h3 style="margin-bottom: 14px; color: var(--primary);">Δήλωση συμμετοχής</h3>
 
         <form method="post" style="display: grid; gap: 14px;">
-          {% csrf_token %}
+  {% csrf_token %}
 
-          <div><label>Ονοματεπώνυμο</label>{{ form.full_name }}</div>
-          <div><label>Email</label>{{ form.email }}</div>
-          <div><label>Τηλέφωνο</label>{{ form.phone }}</div>
-          <div><label>Σύλλογος</label>{{ form.club }}</div>
-          <div><label>ELO</label>{{ form.elo }}</div>
-          <div><label>Σχόλια</label>{{ form.notes }}</div>
+  <div>
+    <label>Ονοματεπώνυμο</label>
+    {{ form.full_name }}
+    {{ form.full_name.errors }}
+  </div>
 
-          <button type="submit" name="register_submit" class="btn">
-  Ολοκλήρωση δήλωσης συμμετοχής
-</button>
+  <div>
+    <label>Email</label>
+    {{ form.email }}
+    {{ form.email.errors }}
+  </div>
 
-      {% elif user_registration %}
+  <div>
+    <label>Τηλέφωνο</label>
+    {{ form.phone }}
+    {{ form.phone.errors }}
+  </div>
 
-        <!-- ✅ USER ALREADY REGISTERED -->
-        <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e6eaf2;">
+  <div>
+    <label>Ημερομηνία γέννησης</label>
+    {{ form.birth_date }}
+    {{ form.birth_date.errors }}
+  </div>
 
-        <h3 style="color: var(--primary);">Είσαι ήδη δηλωμένος</h3>
+  <div>
+    <label>FIDE ID</label>
+    {{ form.fide_id }}
+    {{ form.fide_id.errors }}
+  </div>
 
-        <!-- ✅ POSTPONEMENT SECTION -->
-        <div style="margin-top: 20px;">
+  <div>
+    <label>Σύλλογος</label>
+    {{ form.club }}
+    {{ form.club.errors }}
+  </div>
 
-          <h4>Αίτημα αναβολής</h4>
+  <div>
+    <label>ELO</label>
+    {{ form.elo }}
+    {{ form.elo.errors }}
+  </div>
 
-          {% if existing_pending_request %}
-            <p style="color:#8a4b08; font-weight:600;">
-              Έχεις ήδη ένα εκκρεμές αίτημα αναβολής.
-            </p>
-          {% else %}
-            <form method="post" style="display:grid; gap:12px;">
-              {% csrf_token %}
-              {{ postponement_form.as_p }}
+  <div>
+    <label>Σχόλια</label>
+    {{ form.notes }}
+    {{ form.notes.errors }}
+  </div>
 
-              <button type="submit" name="postponement_submit" class="btn">
-                Υποβολή αιτήματος αναβολής
-              </button>
-            </form>
-          {% endif %}
+  <button type="submit" name="register_submit" class="btn">
+    Ολοκλήρωση δήλωσης συμμετοχής
+  </button>
+</form>
 
-        </div>
+{% elif user_registration %}
 
-      {% endif %}
+  <!-- ✅ USER ALREADY REGISTERED -->
+  <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e6eaf2;">
 
-      <a class="back" href="/tournaments/">← Επιστροφή στη λίστα τουρνουά</a>
+  <h3 style="color: var(--primary);">Είσαι ήδη δηλωμένος</h3>
+
+  <!-- ✅ POSTPONEMENT SECTION -->
+  <div style="margin-top: 20px;">
+
+    <h4>Αίτημα αναβολής</h4>
+
+    {% if existing_pending_request %}
+      <p style="color:#8a4b08; font-weight:600;">
+        Έχεις ήδη ένα εκκρεμές αίτημα αναβολής.
+      </p>
+    {% else %}
+      <form method="post" style="display:grid; gap:12px;">
+        {% csrf_token %}
+        {{ postponement_form.as_p }}
+
+        <button type="submit" name="postponement_submit" class="btn">
+          Υποβολή αιτήματος αναβολής
+        </button>
+      </form>
+    {% endif %}
+
+  </div>
+
+{% endif %}
+
+<a class="back" href="/tournaments/">← Επιστροφή στη λίστα τουρνουά</a>
     </div>
   </div>
 </section>
