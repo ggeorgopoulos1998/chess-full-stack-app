@@ -61,6 +61,18 @@ class Registration(models.Model):
     email = models.EmailField()
     phone = models.CharField(max_length=20)
 
+    birth_date = models.DateField(
+        "Ημερομηνία γέννησης",
+        null=True
+    )
+
+    fide_id = models.CharField(
+        "FIDE ID",
+        max_length=20,
+        blank=True,
+        null=True
+    )
+
     club = models.CharField(max_length=255, blank=True, null=True)
     elo = models.IntegerField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
