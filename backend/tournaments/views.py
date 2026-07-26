@@ -8,15 +8,30 @@ from .models import Tournament, Registration, TournamentPostponementRequest
 def send_registration_notification(registration, tournament):
     subject = f"Νέα εγγραφή στο τουρνουά: {tournament}"
 
+    birth_date = (
+        registration.birth_date.strftime("%d/%m/%Y")
+        if registration.birth_date
+        else "Δεν δηλώθηκε"
+    )
+
     message = f"""
 Έγινε νέα εγγραφή σε τουρνουά.
 
 Τουρνουά: {tournament}
-Ημερομηνία: {tournament.date}
+Ημερομηνία: {tournament.date.strftime("%d/%m/%Y %H:%M")}
+
+Στοιχεία συμμετέχοντα:
 
 Ονοματεπώνυμο: {registration.full_name}
 Email: {registration.email}
-Κατάσταση πληρωμής: {registration.payment_status}
+Τηλέφωνο: {registration.phone}
+Ημερομηνία γέννησης: {birth_date}
+FIDE ID: {registration.fide_id or "Δεν δηλώθηκε"}
+Σύλλογος: {registration.club or "Δεν δηλώθηκε"}
+ELO: {registration.elo if registration.elo is not None else "Δεν δηλώθηκε"}
+Σχόλια: {registration.notes or "Δεν δηλώθηκαν"}
+
+Κατάσταση πληρωμής: Πληρωμή στον όμιλο
 Κωδικός εγγραφής: {registration.pk}
 """.strip()
 
