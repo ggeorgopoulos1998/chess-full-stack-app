@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class Coach(models.Model):
@@ -11,7 +12,12 @@ class Coach(models.Model):
     full_bio = models.TextField(blank=True, null=True)
 
     specialty = models.CharField(max_length=150, blank=True, null=True)
-    photo = models.ImageField(upload_to="coaches/", blank=True, null=True)
+    photo = CloudinaryField(
+        "photo",
+        folder="coaches",
+        blank=True,
+        null=True
+    )
 
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

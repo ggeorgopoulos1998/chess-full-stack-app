@@ -7,12 +7,21 @@
   <div class="container">
     <div class="hero-card">
       <h2>Προπονήσεις</h2>
-      <p>Δείτε διαθέσιμες προπονήσεις με προπονητές και επιλέξτε αυτή που σας ενδιαφέρει.</p>
+      <p>
+        Δείτε διαθέσιμες προπονήσεις με προπονητές και επιλέξτε αυτή που σας ενδιαφέρει.
+      </p>
 
       <!-- 🔍 DATE FILTER -->
-      <form method="get" style="margin-top: 24px; display: flex; gap: 12px; align-items: end;">
+      <form
+        method="get"
+        style="margin-top: 24px; display: flex; gap: 12px; align-items: end;"
+      >
         <div>
-          <label for="date"><strong>Αναζήτηση με ημερομηνία</strong></label><br>
+          <label for="date">
+            <strong>Αναζήτηση με ημερομηνία</strong>
+          </label>
+          <br>
+
           <input
             type="date"
             id="date"
@@ -21,49 +30,118 @@
           >
         </div>
 
-        <button type="submit" class="btn" style="border:0; cursor:pointer;">
+        <button
+          type="submit"
+          class="btn"
+          style="border: 0; cursor: pointer;"
+        >
           Αναζήτηση
         </button>
 
         {% if selected_date %}
-          <a href="{% url 'training_list' %}" class="btn">Καθαρισμός</a>
+          <a href="{% url 'training_list' %}" class="btn">
+            Καθαρισμός
+          </a>
         {% endif %}
       </form>
     </div>
   </div>
 </section>
 
+
 <section>
   <div class="container">
-    {% if sessions %}
-      <div class="grid">
-        {% for s in sessions %}
-          <article class="card">
-            <span class="badge">{{ s.session_type|title }}</span>
 
+    {% if sessions %}
+
+      <div class="grid">
+
+        {% for s in sessions %}
+
+          <article class="card">
+
+            <!-- 👤 COACH PHOTO -->
+            {% if s.coach.photo %}
+              <img
+                src="{{ s.coach.photo.url }}"
+                alt="{{ s.coach.first_name }} {{ s.coach.last_name }}"
+                style="
+                  width: 100%;
+                  height: 220px;
+                  object-fit: cover;
+                  display: block;
+                  border-radius: 14px;
+                  margin-bottom: 16px;
+                "
+              >
+            {% endif %}
+
+            <!-- SESSION TYPE -->
+            <span class="badge">
+              {{ s.session_type|title }}
+            </span>
+
+            <!-- TITLE -->
             <h3>{{ s.title }}</h3>
 
+            <!-- DESCRIPTION -->
             {% if s.description %}
               <p>{{ s.description }}</p>
             {% endif %}
 
+            <!-- DETAILS -->
             <ul class="meta">
-              <li><strong>Προπονητής:</strong> {{ s.coach.first_name }} {{ s.coach.last_name }}</li>
-              <li><strong>Ημερομηνία:</strong> {{ s.date|date:"d/m/Y H:i" }}</li>
-              <li><strong>Ώρα:</strong> {{ s.start_time }}</li>
-              <li><strong>Διάρκεια:</strong> {{ s.duration_minutes }} λεπτά</li>
-              <li><strong>Κόστος:</strong> {{ s.price_euro }}€</li>
+
+              <li>
+                <strong>Προπονητής:</strong>
+                {{ s.coach.first_name }} {{ s.coach.last_name }}
+              </li>
+
+              <li>
+                <strong>Ημερομηνία:</strong>
+                {{ s.date|date:"d/m/Y H:i" }}
+              </li>
+
+              <li>
+                <strong>Ώρα:</strong>
+                {{ s.start_time }}
+              </li>
+
+              <li>
+                <strong>Διάρκεια:</strong>
+                {{ s.duration_minutes }} λεπτά
+              </li>
+
+              <li>
+                <strong>Κόστος:</strong>
+                {{ s.price_euro }}€
+              </li>
+
             </ul>
 
-            <a href="{% url 'training_detail' s.id %}" class="btn">
+            <!-- DETAILS BUTTON -->
+            <a
+              href="{% url 'training_detail' s.id %}"
+              class="btn"
+            >
               Δες λεπτομέρειες
             </a>
+
           </article>
+
         {% endfor %}
+
       </div>
+
     {% else %}
-      <div class="empty">Δεν υπάρχουν διαθέσιμες προπονήσεις.</div>
+
+      <div class="empty">
+        Δεν υπάρχουν διαθέσιμες προπονήσεις.
+      </div>
+
     {% endif %}
+
   </div>
 </section>
+
 {% endblock %}
