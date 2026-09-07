@@ -1,9 +1,70 @@
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 
 from .forms import RegistrationForm, TournamentPostponementRequestForm
 from .models import Tournament, Registration, TournamentPostponementRequest
+
+def send_player_verification_email(request, registration, tournament):
+    verification_url = request.build_absolute_uri(
+        reverse(
+            "verify_registration_email",
+            args=[registration.verification_token]
+        )
+    )
+
+    subject = f"Επιβεβαίωση συμμετοχής: {tournament.title}"
+
+    message = f"""
+Αγαπητέ/ή {registration.full_name},
+
+λάβαμε τη δήλωση συμμετοχής σας για το τουρνουά:
+
+{tournament.title}
+
+Ημερομηνία: {tournament.date.strftime("%d/%m/%Y %H:%M")}
+Τοποθεσία: {tournament.location}
+
+Για να επιβεβαιώσετε το email σας και τη συμμετοχή σας,
+πατήστε στον παρακάτω σύνδεσμο:
+
+{verification_url}
+
+Κωδικός εγγραφής: {registration.pk}
+
+Ευχαριστούμε.
+""".strip()
+
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[registration.email],
+            fail_silently=False,
+        )
+    except Exception as error:
+        print(f"Player verification email failed: {error}")
+
+def verify_registration_email(request, token):
+    registration = get_object_or_404(
+        Registration,
+        verification_token=token
+    )
+
+    if not registration.email_verified:
+        registration.email_verified = True
+        registration.save(update_fields=["email_verified"])
+
+    return render(
+        request,
+        "tournaments/email_verified.html",
+        {
+            "registration": registration,
+            "tournament": registration.tournament,
+        }
+    )
 
 def send_registration_notification(registration, tournament):
     subject = f"Νέα εγγραφή στο τουρνουά: {tournament}"
@@ -135,6 +196,12 @@ def tournament_detail(request, slug):
                 registration.save()
 
                 send_registration_notification(registration, tournament)
+
+                send_player_verification_email(
+                    request,
+                    registration,
+                    tournament
+                )
 
                 return redirect(f"/tournaments/{tournament.slug}/?success=1")
 

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from cloudinary.models import CloudinaryField
+import uuid
 
 
 class Tournament(models.Model):
@@ -83,6 +84,14 @@ class Registration(models.Model):
         default="pending"
     )
     stripe_session_id = models.CharField(max_length=255, blank=True, null=True)
+
+    email_verified = models.BooleanField(default=False)
+
+    verification_token = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 

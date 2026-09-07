@@ -3,19 +3,47 @@ from . import views
 from . import payments
 
 urlpatterns = [
-    # 🔹 LIST PAGE (main entry)
+    # 🔹 LIST PAGE
     path("", views.tournament_list, name="tournament_list"),
 
-    # ❌ REMOVE calendar route
-    # path("calendar/", views.tournament_calendar, name="tournament_calendar"),
+    # 🔹 EMAIL VERIFICATION
+    path(
+        "verify/<uuid:token>/",
+        views.verify_registration_email,
+        name="verify_registration_email",
+    ),
 
-    # 🔹 PAYMENT ROUTES (KEEP BEFORE SLUG)
-    path("<slug:slug>/checkout/", payments.create_checkout_session, name="tournament_checkout"),
-    path("<slug:slug>/payment/success/", payments.payment_success, name="payment_success"),
-    path("<slug:slug>/payment/cancel/", payments.payment_cancel, name="payment_cancel"),
-    path("<slug:slug>/payment/status/", payments.check_payment_status, name="payment_status"),
-    path("<slug:slug>/payment/resume/", payments.resume_checkout_session, name="resume_checkout"),
+    # 🔹 PAYMENT ROUTES
+    path(
+        "<slug:slug>/checkout/",
+        payments.create_checkout_session,
+        name="tournament_checkout"
+    ),
+    path(
+        "<slug:slug>/payment/success/",
+        payments.payment_success,
+        name="payment_success"
+    ),
+    path(
+        "<slug:slug>/payment/cancel/",
+        payments.payment_cancel,
+        name="payment_cancel"
+    ),
+    path(
+        "<slug:slug>/payment/status/",
+        payments.check_payment_status,
+        name="payment_status"
+    ),
+    path(
+        "<slug:slug>/payment/resume/",
+        payments.resume_checkout_session,
+        name="resume_checkout"
+    ),
 
-    # 🔹 DETAIL PAGE (LAST)
-    path("<slug:slug>/", views.tournament_detail, name="tournament_detail"),
+    # 🔹 DETAIL PAGE - KEEP LAST
+    path(
+        "<slug:slug>/",
+        views.tournament_detail,
+        name="tournament_detail"
+    ),
 ]
