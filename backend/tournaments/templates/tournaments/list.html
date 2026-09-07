@@ -6,52 +6,91 @@
 {% block content %}
 <section class="hero">
   <div class="container">
-    <div class="hero-card">
-      <h2>Τουρνουά Σκακιού</h2>
-      <p>
-        Δείτε τις διαθέσιμες διοργανώσεις του συλλόγου και ενημερωθείτε για
-        ημερομηνίες, κατηγορίες, κόστος συμμετοχής και βασικές λεπτομέρειες.
-      </p>
-
-      <form method="get" style="margin-top: 24px; display: flex; gap: 12px; align-items: end;">
-        <div>
-          <label for="date"><strong>Αναζήτηση με ημερομηνία</strong></label><br>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            value="{{ selected_date|default:'' }}"
-          >
-        </div>
-
-        <button type="submit" class="btn" style="border:0; cursor:pointer;">
-          Αναζήτηση
-        </button>
-
-        {% if selected_date %}
-          <a href="{% url 'tournament_list' %}" class="btn">Καθαρισμός</a>
-        {% endif %}
-      </form>
-    </div>
-  </div>
-</section>
-
-
-<!-- TOURNAMENT LOTTERY POSTER -->
-<section>
-  <div class="container">
-    <img
-      src="{% static 'images/tournament-lottery.jpeg' %}"
-      alt="Παίξε Σκάκι και Κληρώσου"
+    <div
+      class="hero-card"
       style="
-        width: 100%;
-        max-width: 700px;
-        height: auto;
-        display: block;
-        margin: 24px auto 32px auto;
-        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+        flex-wrap: wrap;
       "
     >
+
+      <!-- LEFT SIDE -->
+      <div style="flex: 1; min-width: 300px;">
+
+        <h2>Τουρνουά Σκακιού</h2>
+
+        <p>
+          Δείτε τις διαθέσιμες διοργανώσεις του συλλόγου και ενημερωθείτε για
+          ημερομηνίες, κατηγορίες, κόστος συμμετοχής και βασικές λεπτομέρειες.
+        </p>
+
+        <form
+          method="get"
+          style="
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            align-items: end;
+            flex-wrap: wrap;
+          "
+        >
+          <div>
+            <label for="date">
+              <strong>Αναζήτηση με ημερομηνία</strong>
+            </label>
+            <br>
+
+            <input
+              type="date"
+              id="date"
+              name="date"
+              value="{{ selected_date|default:'' }}"
+            >
+          </div>
+
+          <button
+            type="submit"
+            class="btn"
+            style="border:0; cursor:pointer;"
+          >
+            Αναζήτηση
+          </button>
+
+          {% if selected_date %}
+            <a href="{% url 'tournament_list' %}" class="btn">
+              Καθαρισμός
+            </a>
+          {% endif %}
+        </form>
+
+      </div>
+
+
+      <!-- RIGHT SIDE: LOTTERY POSTER -->
+      <div
+        style="
+          flex: 0 0 190px;
+          text-align: center;
+        "
+      >
+        <img
+          src="{% static 'images/tournament-lottery.jpeg' %}"
+          alt="Παίξε Σκάκι και Κληρώσου"
+          style="
+            width: 190px;
+            height: 250px;
+            object-fit: cover;
+            object-position: top;
+            border-radius: 14px;
+            display: block;
+          "
+        >
+      </div>
+
+    </div>
   </div>
 </section>
 
