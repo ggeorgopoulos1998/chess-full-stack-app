@@ -1,4 +1,5 @@
 {% extends "tournaments/base.html" %}
+{% load static %}
 
 {% block title %}Τουρνουά Σκακιού | ΑΣΟΠ ΔΙΑΣ{% endblock %}
 
@@ -34,6 +35,26 @@
     </div>
   </div>
 </section>
+
+
+<!-- TOURNAMENT LOTTERY POSTER -->
+<section>
+  <div class="container">
+    <img
+      src="{% static 'images/tournament-lottery.jpeg' %}"
+      alt="Παίξε Σκάκι και Κληρώσου"
+      style="
+        width: 100%;
+        max-width: 700px;
+        height: auto;
+        display: block;
+        margin: 24px auto 32px auto;
+        border-radius: 16px;
+      "
+    >
+  </div>
+</section>
+
 
 <section>
   <div class="container">
