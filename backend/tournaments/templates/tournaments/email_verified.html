@@ -1,0 +1,59 @@
+{% extends "tournaments/base.html" %}
+
+{% block content %}
+
+<div style="
+    max-width: 700px;
+    margin: 60px auto;
+    padding: 40px;
+    background: #ffffff;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+">
+
+    <h1 style="margin-bottom: 20px;">
+        Επιβεβαίωση Email
+    </h1>
+
+    <h2 style="
+        color: #f58a1f;
+        margin-bottom: 25px;
+    ">
+        ✓ Το email σας επιβεβαιώθηκε επιτυχώς!
+    </h2>
+
+    <p style="
+        font-size: 18px;
+        margin-bottom: 15px;
+    ">
+        Ευχαριστούμε, <strong>{{ registration.full_name }}</strong>.
+    </p>
+
+    <p style="
+        font-size: 17px;
+        margin-bottom: 30px;
+    ">
+        Η συμμετοχή σας στο τουρνουά
+        <strong>{{ tournament.title }}</strong>
+        έχει επιβεβαιωθεί.
+    </p>
+
+    <a
+        href="{% url 'tournament_detail' tournament.slug %}"
+        style="
+            display: inline-block;
+            padding: 12px 24px;
+            background: #f58a1f;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        "
+    >
+        Επιστροφή στο τουρνουά
+    </a>
+
+</div>
+
+{% endblock %}
