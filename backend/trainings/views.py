@@ -1,9 +1,51 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from datetime import datetime
-
+from django.conf import settings
+from django.core.mail import send_mail
+from django.db import transaction
+import logging
 from .models import TrainingSession
 from .forms import TrainingBookingForm
 
+
+logger = logging.getLogger(__name__)
+
+
+def send_training_booking_notification(booking, session):
+    subject = f"Νέα εγγραφή σε προπόνηση: {session.title}"
+
+    message = f"""
+Έγινε νέα εγγραφή σε προπόνηση.
+
+Προπόνηση: {session.title}
+Προπονητής: {session.coach}
+Ημερομηνία: {session.date.strftime("%d/%m/%Y %H:%M")}
+Ώρα έναρξης: {session.start_time}
+Τύπος: {session.get_session_type_display()}
+
+Στοιχεία συμμετέχοντα:
+
+Ονοματεπώνυμο: {booking.full_name}
+Email: {booking.email}
+Τηλέφωνο: {booking.phone}
+Σχόλια: {booking.notes or "Δεν δηλώθηκαν"}
+
+Κωδικός εγγραφής: {booking.pk}
+""".strip()
+
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.TOURNAMENT_ADMIN_EMAIL],
+            fail_silently=False,
+        )
+    except Exception:
+        logger.exception(
+            "Training booking notification failed for booking %s",
+            booking.pk
+        )
 
 def training_list(request):
     selected_date = request.GET.get("date")
@@ -51,6 +93,12 @@ def training_detail(request, id):
                 booking.user = request.user
 
             booking.save()
+
+            transaction.on_commit(
+                lambda booking=booking, session=session:
+                send_training_booking_notification(booking, session)
+            )
+
             return redirect(f"/trainings/{session.id}/?success=1")
     else:
         form = TrainingBookingForm()
